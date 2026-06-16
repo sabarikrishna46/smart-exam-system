@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seating Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #5b7b9e;
+            --primary-light: #7cb9e8;
+            --accent: #5da28d;
+            --warning: #d4a574;
+            --dark: #34495e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* ===== NAVBAR STYLING ===== */
+        .navbar {
+            background: rgba(51, 65, 85, 0.92);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+            padding: 0.8rem 1rem;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: white !important;
+            font-size: 1.4rem;
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.9) !important;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-light) !important;
+        }
+
+        /* ===== PREMIUM HAMBURGER BUTTON ===== */
+        .hamburger {
+            display: flex !important;
+            flex-direction: column;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #5b7b9e, #7cb9e8);
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            gap: 6px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+            transition: all 0.35s ease;
+            margin-right: 10px;
+        }
+
+        .hamburger:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 18px rgba(124, 185, 232, 0.8);
+        }
+
+        .hamburger span {
+            width: 100%;
+            height: 4px;
+            background: #ffffff;
+            border-radius: 5px;
+            transition: all 0.45s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: translateY(10px) rotate(45deg);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+            transform: scale(0);
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: translateY(-10px) rotate(-45deg);
+        }
+
+        .hamburger:active {
+            transform: scale(0.95);
+        }
+
+        .offcanvas-menu {
+            position: fixed;
+            right: -300px;
+            top: 70px;
+            width: 300px;
+            height: calc(100vh - 70px);
+            background: white;
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+            z-index: 999;
+            overflow-y: auto;
+            padding: 20px 0;
+            transition: right 0.45s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        .offcanvas-menu.active {
+            right: 0;
+        }
+
+        .offcanvas-menu .navbar-nav {
+            flex-direction: column;
+        }
+
+        .offcanvas-menu .nav-item {
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .offcanvas-menu .nav-link {
+            padding: 12px 20px;
+            display: block;
+            color: #34495e !important;
+            font-weight: 600;
+        }
+
+        .offcanvas-menu .nav-link:hover {
+            color: #5b7b9e !important;
+            background-color: rgba(91, 123, 158, 0.08);
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 998;
+            display: none;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        /* Hide desktop menu by default */
+        .navbar-expand-lg .navbar-collapse {
+            display: none !important;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            margin-top: 80px;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%);
+            color: white;
+            padding: 40px 30px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 25px rgba(52, 73, 94, 0.3);
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            margin: 0;
+        }
+
+        /* Date Section */
+        .date-section {
+            margin-bottom: 50px;
+        }
+
+        .date-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 20px 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(91, 123, 158, 0.25);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .date-header i {
+            font-size: 1.5rem;
+        }
+
+        /* Table Container */
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        /* Department Cards */
+        .department-card {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            border-left: 5px solid var(--accent);
+            transition: all 0.3s ease;
+        }
+
+        .department-card:hover {
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .department-header {
+            background: linear-gradient(135deg, var(--accent) 0%, #6db39f 100%);
+            color: white;
+            padding: 16px 20px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .department-header i {
+            font-size: 1.3rem;
+        }
+
+        .department-content {
+            padding: 20px;
+        }
+
+        /* Table Styling */
+        .seating-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 0;
+        }
+
+        .seating-table thead {
+            background: #f8f9fa;
+        }
+
+        .seating-table th {
+            background-color: #e8ecf1;
+            color: var(--dark);
+            padding: 14px 16px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .seating-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #eee;
+            font-size: 0.95rem;
+        }
+
+        .seating-table tbody tr:hover {
+            background-color: rgba(91, 123, 158, 0.05);
+        }
+
+        .seating-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Department separator border */
+        .dept-separator td {
+            border-bottom: 3px solid var(--dark) !important;
+        }
+
+        .department-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--accent) 0%, #6db39f 100%);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .dept-cell {
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .hall-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .roll-range {
+            font-family: 'Courier New', monospace;
+            background: #f5f7fa;
+            padding: 6px 12px;
+            border-radius: 6px;
+            color: var(--dark);
+            font-weight: 500;
+        }
+
+        .count-badge {
+            display: inline-block;
+            background: var(--warning);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state i {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state p {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .date-header {
+                font-size: 1.1rem;
+            }
+
+            .department-header {
+                font-size: 1rem;
+            }
+
+            .seating-table th,
+            .seating-table td {
+                padding: 10px 12px;
+                font-size: 0.85rem;
+            }
+
+            .hall-badge {
+                padding: 5px 10px;
+                font-size: 0.8rem;
+            }
+
+            .roll-range {
+                padding: 4px 8px;
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+            }
+
+            .header {
+                break-after: avoid;
+            }
+
+            .department-card {
+                page-break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+
+        .navbar {
+            background: rgba(51, 65, 85, 0.92);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+            padding: 0.8rem 1rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: white !important;
+            font-size: 1.4rem;
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.9) !important;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-light) !important;
+        }
+
+        .hamburger {
+            display: flex !important;
+            flex-direction: column;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #5b7b9e, #7cb9e8);
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            gap: 6px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+            transition: all 0.35s ease;
+        }
+
+        .hamburger:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 18px rgba(124, 185, 232, 0.8);
+        }
+
+        .hamburger span {
+            width: 100%;
+            height: 4px;
+            background: #ffffff;
+            border-radius: 5px;
+            transition: all 0.45s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: translateY(10px) rotate(45deg);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+            transform: scale(0);
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: translateY(-10px) rotate(-45deg);
+        }
+
+        .hamburger:active {
+            transform: scale(0.95);
+        }
+
+        .offcanvas-menu {
+            transition: right 0.45s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            position: fixed;
+            right: -300px;
+            top: 70px;
+            width: 300px;
+            height: calc(100vh - 70px);
+            background: white;
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+            z-index: 999;
+            overflow-y: auto;
+            padding: 20px 0;
+        }
+
+        .offcanvas-menu.active {
+            right: 0;
+        }
+
+        .offcanvas-menu .navbar-nav {
+            flex-direction: column;
+        }
+
+        .offcanvas-menu .nav-item {
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .offcanvas-menu .nav-link {
+            padding: 12px 20px;
+            display: block;
+            color: #34495e !important;
+            font-weight: 600;
+        }
+
+        .offcanvas-menu .nav-link:hover {
+            color: #5b7b9e !important;
+            background-color: rgba(91, 123, 158, 0.08);
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 998;
+            display: none;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Overlay for mobile menu -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">📜 Exam Schedule</a>
+            <button class="hamburger" id="hamburgerBtn" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">📊 Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('seating') }}">Seating Plan</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('seating_details') }}">Seating Details</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('get_hall_ticket') }}">Hall Ticket</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='add_exam') }}">Add Exam</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='manage') }}">Manage Exam</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='add_student') }}">Add Student</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='add_staff') }}">Add Staff</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('staff_view') }}">Staff View</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='add_department') }}">Add Bench Info</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='mark_absent_new') }}">Mark Absent</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('absentees_statement') }}">Absentees Statement</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Off-canvas Mobile Menu -->
+    <div class="offcanvas-menu" id="mobileMenu">
+        <ul class="navbar-nav">
+            <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">📊 Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('seating') }}">Seating Plan</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('seating_details') }}">Seating Details</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('get_hall_ticket') }}">Hall Ticket</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='add_exam') }}">Add Exam</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='manage') }}">Manage Exam</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='add_student') }}">Add Student</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='add_staff') }}">Add Staff</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('staff_view') }}">Staff View</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='add_department') }}">Add Bench Info</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='mark_absent_new') }}">Mark Absent</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('absentees_statement') }}">Absentees Statement</a></li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1><i class="bi bi-chair"></i> Seating Details</h1>
+            <p>Department-wise hall allocations with roll number ranges</p>
+        </div>
+
+        <!-- Exam Date Info with Selector -->
+        {% if exam_date %}
+            <div style="margin-bottom: 20px;">
+                <label for="dateSelector" style="font-weight: 600; margin-right: 10px;">Select Exam Date:</label>
+                <select id="dateSelector" onchange="changeDate(this.value)" style="padding: 10px; border-radius: 8px; border: 2px solid #5b7b9e; font-size: 1rem;">
+                    {% for date_obj in exam_dates %}
+                        <option value="{{ date_obj.exam_date.strftime('%Y-%m-%d') }}" 
+                            {% if date_obj.exam_date == exam_date %}selected{% endif %}>
+                            {{ date_obj.exam_date.strftime('%d-%m-%Y') }} - Session: {{ date_obj.exam_session or 'N/A' }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="date-header">
+                <i class="bi bi-calendar-event"></i>
+                Exam Date: {{ exam_date.strftime('%d-%m-%Y') if exam_date else 'N/A' }}
+                {% if exam_session %} | Session: {{ exam_session }}{% endif %}
+            </div>
+        {% endif %}
+
+        <!-- Main Table -->
+        {% if grouped_data %}
+            <div class="table-container">
+                <div class="table-responsive">
+                    <table class="seating-table">
+                        <thead>
+                            <tr>
+                                <th><i class="bi bi-building"></i> Department</th>
+                                <th><i class="bi bi-door-open"></i> Hall</th>
+                                <th><i class="bi bi-hash"></i> Starting Roll No</th>
+                                <th><i class="bi bi-hash"></i> Ending Roll No</th>
+                                <th><i class="bi bi-people"></i> Total Students</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for hall_no, hall_data in grouped_data | sort_halls %}
+                                {% for hall in hall_data %}
+                                    <tr {% if loop.last %}class="dept-separator"{% endif %}>
+                                        {% if loop.first %}
+                                            <td class="dept-cell" rowspan="{{ hall_data|length }}">
+                                                <span class="department-badge">{{ hall_no }}</span>
+                                            </td>
+                                        {% endif %}
+                                        <td>
+                                            <span class="hall-badge">{{ hall.hall_no }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="roll-range">{{ hall.min_roll }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="roll-range">{{ hall.max_roll }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="count-badge">{{ hall.student_count }}</span>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <i class="bi bi-inbox"></i>
+                <p>No seating allocations found</p>
+                <p style="font-size: 0.95rem; color: #bbb;">Please check back after seating arrangements are finalized.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // Hamburger Menu Toggle
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const overlay = document.getElementById('overlay');
+
+        hamburgerBtn.addEventListener('click', () => {
+            hamburgerBtn.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            overlay.classList.toggle('active');
+        });
+
+        overlay.addEventListener('click', () => {
+            hamburgerBtn.classList.remove('active');
+            mobileMenu.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+
+        // Close menu when clicking a link
+        const navLinks = mobileMenu.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                hamburgerBtn.classList.remove('active');
+                mobileMenu.classList.remove('active');
+                overlay.classList.remove('active');
+            });
+        });
+
+        // Date selector function
+        function changeDate(selectedDate) {
+            window.location.href = `/seating_details?exam_date=${selectedDate}`;
+        }
+    </script>
+</body>
+</html>

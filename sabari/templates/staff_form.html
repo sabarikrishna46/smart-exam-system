@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Exam Allocation</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('https://www.alagappauniversity.ac.in/img/core-img/alu-slide1.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        .form-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .form-label {
+            color: rgb(0, 6, 12);
+            font-weight: bold;
+        }
+
+        .btn-back {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- University Logo -->
+    <center>
+        <img src="https://da.alagappauniversity.ac.in/Assets/img/logo/home_logo.png" 
+             height="200" width="600" alt="Alagappa University Logo">
+    </center>
+
+    <div class="container form-container">
+        <!-- Exactly same title style as "Add New Exam" page -->
+        <h1 class="my-4 text-center" style="color: rgb(0, 6, 12); font-family: fantasy;">
+            Staff Duty Allocation
+        </h1>
+
+        <!-- Flash Messages (same as Add Exam page) -->
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+              {% for message in messages %}
+                {{ message }}<br>
+              {% endfor %}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <!-- Staff Selection Form -->
+        <form method="POST" action="{{ url_for('staff_view') }}">
+            <div class="mb-4">
+                <label for="staff_id" class="form-label">Select Staff Member:</label>
+                <select name="staff_id" id="staff_id" class="form-select form-select-lg" required>
+                    <option value="" disabled selected>-- Choose Staff Member --</option>
+                    {% for staff in staff_list %}
+                        <option value="{{ staff.staff_id }}"
+                                {% if selected_staff_id == staff.staff_id %}selected{% endif %}>
+                            {{ staff.name }} ({{ staff.department }}) – {{ staff.staff_id }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-success btn-lg px-5">View Duty Allocation</button>
+                <a href="{{ url_for('index') }}" class="btn btn-secondary btn-back btn-lg px-5">Back to Schedule</a>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-download {
+            background-color: #003366;
+            color: white;
+        }
+
+        .btn-download:hover {
+            background-color: #0059b3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 51, 102, 0.3);
+        }
+
+        .btn-print {
+            background-color: #666;
+            color: white;
+        }
+
+        .btn-print:hover {
+            background-color: #333;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-back {
+            background-color: #ccc;
+            color: #333;
+        }
+
+        .btn-back:hover {
+            background-color: #999;
+            transform: translateY(-2px);
+        }
+
+        .hall-ticket-container {
+            width: 100%;
+            max-width: 750px;
+            background-color: white;
+            padding: 40px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            border: 2px solid #000;
+        }
+
+        /* Header Section */
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #000;
+        }
+
+        .header-left {
+            flex: 1;
+            text-align: center;
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            letter-spacing: 2px;
+        }
+
+        .header-right {
+            flex: 0 0 auto;
+            margin-left: 30px;
+        }
+
+        .photo img {
+            width: 120px;
+            height: 140px;
+            object-fit: cover;
+            border: 2px solid #000;
+            background-color: #f0f0f0;
+        }
+
+        .photo-label {
+            font-size: 10px;
+            margin-top: 5px;
+            font-weight: bold;
+        }
+
+        /* College Info Section */
+        .college-info {
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 15px 0;
+            border-bottom: 2px solid #000;
+        }
+
+        .college-info p {
+            margin: 5px 0;
+            font-weight: bold;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        /* Student Details Section */
+        .student-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px 15px;
+            margin-bottom: 25px;
+            padding: 15px 0;
+            border-bottom: 2px solid #000;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .detail-row {
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .detail-label {
+            font-weight: bold;
+            min-width: 70px;
+            white-space: nowrap;
+        }
+
+        .detail-value {
+            text-align: right;
+            flex: 0 1 auto;
+        }
+
+        /* Exam Table Section */
+        .exam-section {
+            margin-bottom: 30px;
+        }
+
+        .exam-section-title {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table, th, td {
+            border: 1.5px solid #000;
+        }
+
+        th {
+            background-color: #003366;
+            color: white;
+            padding: 10px;
+            font-weight: bold;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        td {
+            padding: 10px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        /* QR Code Section */
+        .qr-section {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 2px solid #000;
+        }
+
+        .qr-label {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 12px;
+        }
+
+        .qr img {
+            width: 130px;
+            height: 130px;
+            margin: 10px auto;
+        }
+
+        @media print {
+            body {
+                background: white;
+                flex-direction: column;
+                padding: 0;
+            }
+            .action-buttons {
+                display: none;
+            }
+            .hall-ticket-container {
+                box-shadow: none;
+                width: 100%;
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+        <button class="btn btn-download" onclick="downloadPDF()">📥 Download PDF</button>
+        <button class="btn btn-print" onclick="window.print()">🖨️ Print</button>
+        <a href="/get_hall_ticket"><button class="btn btn-back" type="button">← Back to Search</button></a>
+    </div>
+
+    <div class="hall-ticket-container">
+        <!-- Header with Title and Photo -->
+        <div class="header-section">
+            <div class="header-left">
+                <div class="title">HALL TICKET</div>
+            </div>
+            <div class="header-right">
+                <div class="photo">
+                    {% if student.image_path %}
+                        <img src="{{ student.image_path }}" alt="Student Photo">
+                    {% else %}
+                        <div style="width: 120px; height: 140px; border: 2px solid #000; display: flex; align-items: center; justify-content: center; font-size: 10px; background-color: #f0f0f0;">
+                            No Photo
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="photo-label">STUDENT PHOTO</div>
+            </div>
+        </div>
+
+        <!-- College and Programme Info -->
+        <div class="college-info">
+            <p>AUO1 - ALAGAPPA GOVT. ARTS COLLEGE - KARAIKUDI</p>
+            {% if student.department == 'CS' or student.department == 'cs' %}
+                <p>Programme Code: 123 - B.Sc (COMPUTER SCIENCE)</p>
+            {% elif student.department == 'COM' or student.department == 'com' %}
+                <p>Programme Code: 124 - B.Com (COMMERCE)</p>
+            {% elif student.department == 'PHY' or student.department == 'phy' %}
+                <p>Programme Code: 125 - B.Sc (PHYSICS)</p>
+            {% elif student.department == 'CHEM' or student.department == 'chem' %}
+                <p>Programme Code: 126 - B.Sc (CHEMISTRY)</p>
+            {% else %}
+                <p>Programme Code: {{ exams[0].department_code or '-' }}</p>
+            {% endif %}
+        </div>
+
+        <!-- Student Details -->
+        <div class="student-details">
+            <div class="detail-row">
+                <span class="detail-label">Name:</span>
+                <span class="detail-value">{{ student.name }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Reg No:</span>
+                <span class="detail-value">{{ student.roll_no }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Email:</span>
+                <span class="detail-value">{{ student.email }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Department:</span>
+                <span class="detail-value">{{ student.department }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Semester:</span>
+                <span class="detail-value">{{ student.semester }}</span>
+            </div>
+        </div>
+
+        <!-- Exam Schedule Section -->
+        <div class="exam-section">
+            <div class="exam-section-title">EXAMINATION SCHEDULE</div>
+            <table>
+                <tr>
+                    <th>Exam Code</th>
+                    <th>Exam Name</th>
+                    <th>Date</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                </tr>
+                {% for exam in exams %}
+                <tr>
+                    <td>{{ exam.exam_code }}</td>
+                    <td>{{ exam.subject }}</td>
+                    <td>{{ exam.exam_date }}</td>
+                    <td>{{ exam.start_time }}</td>
+                    <td>{{ exam.end_time }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        <!-- QR Code Section -->
+        <div class="qr-section">
+            <div class="qr-label">SCAN FOR VERIFICATION</div>
+            <img src="data:image/png;base64,{{ qr_b64 }}" alt="Verification QR Code">
+        </div>
+    </div>
+
+    <script>
+        function downloadPDF() {
+            const element = document.querySelector('.hall-ticket-container');
+            const studentName = '{{ student.name }}';
+            const rollNo = '{{ student.roll_no }}';
+            
+            // Create a temporary container for html2pdf
+            const opt = {
+                margin: 10,
+                filename: `HallTicket_${studentName}_${rollNo}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+            };
+
+            // Check if html2pdf library is available
+            if (typeof html2pdf === 'undefined') {
+                // Fallback: Use browser's print to PDF feature
+                alert('Using browser print feature. Select "Save as PDF" in the print dialog.');
+                window.print();
+            } else {
+                html2pdf().set(opt).from(element).save();
+            }
+        }
+    </script>
+</body>
+</html>

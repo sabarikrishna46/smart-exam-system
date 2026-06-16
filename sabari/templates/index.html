@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EXAM SCHEDULE</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #5b7b9e;
+            --primary-light: #7cb9e8;
+            --accent: #5da28d;
+            --warning: #d4a574;
+            --dark: #34495e;
+        }
+        body {
+            background-color: #f5f7fa;
+            font-family: 'Roboto', sans-serif;
+            color: #333;
+            min-height: 100vh;
+            background-image: url('https://www.alagappauniversity.ac.in/img/core-img/alu-slide1.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+        /* Navbar - Semi-transparent with backdrop blur */
+        .navbar {
+            background: rgba(51, 65, 85, 0.92);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+            padding: 0.8rem 1rem;
+        }
+        .navbar-brand {
+            font-weight: 700;
+            color: white !important;
+            font-size: 1.4rem;
+        }
+        .nav-link {
+            color: rgba(255,255,255,0.9) !important;
+            font-weight: 500;
+        }
+        .nav-link:hover {
+            color: var(--primary-light) !important;
+        }
+/* ===== PREMIUM HAMBURGER BUTTON ===== */
+.hamburger {
+    display: flex !important;
+    flex-direction: column;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    background: linear-gradient(135deg, #5b7b9e, #7cb9e8);
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    gap: 6px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+    transition: all 0.35s ease;
+}
+
+/* Hover glow */
+.hamburger:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 18px rgba(124, 185, 232, 0.8);
+}
+
+/* Hamburger lines */
+.hamburger span {
+    width: 100%;
+    height: 4px;
+    background: #ffffff;
+    border-radius: 5px;
+    transition: all 0.45s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+
+/* ===== ANIMATION TO CLOSE (X) ===== */
+.hamburger.active span:nth-child(1) {
+    transform: translateY(10px) rotate(45deg);
+}
+
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+    transform: scale(0);
+}
+
+.hamburger.active span:nth-child(3) {
+    transform: translateY(-10px) rotate(-45deg);
+}
+.hamburger:active {
+    transform: scale(0.95);
+}
+.offcanvas-menu {
+    transition: right 0.45s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+
+
+        /* Main Container */
+        .container-main {
+            background: rgba(255, 255, 255, 0.93);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            margin: 100px auto 30px;
+            max-width: 90%;
+            width: 1000px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        h1 {
+            color: var(--dark);
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+
+        /* Form Labels */
+        .form-label {
+            color: var(--dark) !important;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .form-select, .form-control {
+            border: 2px solid #bdc3c7;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.95);
+            font-size: 0.85rem;
+            padding: 0.35rem 0.75rem;
+        }
+
+        .form-select:focus, .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(91, 123, 158, 0.1);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 8px 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 8px;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            background: #4a6478;
+            border-color: #4a6478;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(91, 123, 158, 0.3);
+        }
+
+        .btn-success {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .btn-success:hover {
+            background: #4a8a74;
+            border-color: #4a8a74;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(93, 162, 141, 0.3);
+        }
+
+        /* Table */
+        .table {
+            background: rgba(255,255,255,0.95);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .table-dark {
+            background: var(--dark);
+            color: white;
+        }
+
+        .table thead th {
+            background: var(--dark);
+            color: white;
+            font-weight: 600;
+            border: none;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: rgba(91, 123, 158, 0.08) !important;
+        }
+
+        .table tbody td {
+            vertical-align: middle;
+            border-color: #ecf0f1;
+            color: #333;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.8rem;
+        }
+
+        .table thead th {
+            padding: 0.6rem 0.75rem;
+            font-size: 0.8rem;
+        }
+
+        /* Calendar - Reduced size */
+        #examCalendar {
+            max-width: 900px;
+            margin: 40px auto;
+            font-size: 0.9rem;
+        }
+        .fc {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+       /* Hamburger - Always visible */
+.hamburger {
+    display: flex !important; /* Always show hamburger */
+    flex-direction: column;
+    justify-content: space-around;
+    width: 35px;
+    height: 28px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    z-index: 1001;
+    margin-right: 10px;
+}
+.hamburger span {
+    width: 100%;
+    height: 4px;
+    background: #ffffff;   /* ✅ WHITE */
+    border-radius: 2px;
+    transition: all 0.4s ease;
+    display: block;
+}
+
+
+.hamburger.active span:nth-child(1) { 
+    transform: rotate(45deg) translate(8px, 8px); 
+}
+.hamburger.active span:nth-child(2) { 
+    opacity: 0; 
+}
+.hamburger.active span:nth-child(3) { 
+    transform: rotate(-45deg) translate(7px, -7px); 
+}
+
+/* Always hide Bootstrap's default dropdown menu */
+.navbar-expand-lg .navbar-collapse {
+    display: none !important;
+}
+/* Fix off-canvas menu link visibility */
+.offcanvas-menu .nav-link {
+    color: #34495e !important;   /* DARK TEXT */
+    font-weight: 600;
+}
+
+.offcanvas-menu .nav-link:hover {
+    color: #5b7b9e !important;
+    background-color: rgba(91, 123, 158, 0.08);
+    padding-left: 6px;
+}
+
+/* Off-canvas menu styling */
+.offcanvas-menu {
+    position: fixed;
+    right: -300px;
+    top: 70px;
+    width: 300px;
+    height: calc(100vh - 70px);
+    background: white;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+    z-index: 999;
+    overflow-y: auto;
+    padding: 20px 0;
+}
+
+.offcanvas-menu.active {
+    right: 0;
+}
+
+.offcanvas-menu .navbar-nav {
+    flex-direction: column;
+}
+
+.offcanvas-menu .nav-item {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.offcanvas-menu .nav-link {
+    padding: 12px 20px;
+    display: block;
+}
+
+/* Overlay styling */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 998;
+    display: none;
+}
+
+.overlay.active {
+    display: block;
+}
+
+    </style>
+</head>
+<body>
+
+    <!-- Overlay for mobile menu -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">📜 Exam Schedule</a>
+            <button class="hamburger" id="hamburgerBtn" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">📊 Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('seating') }}">Seating Plan</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('seating_details') }}">Seating Details</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('get_hall_ticket') }}">Hall Ticket</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='add_exam') }}">Add Exam</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='manage') }}">Manage Exam</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='add_student') }}">Add Student</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='add_staff') }}">Add Staff</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('staff_view') }}">Staff View</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='add_department') }}">Add Bench Info</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='mark_absent_new') }}">Mark Absent</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('absentees_statement') }}">Absentees Statement</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Off-canvas Mobile Menu -->
+    <div class="offcanvas-menu" id="mobileMenu">
+        <ul class="navbar-nav">
+            <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">📊 Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('seating') }}">Seating Plan</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('seating_details') }}">Seating Details</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('get_hall_ticket') }}">Hall Ticket</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='add_exam') }}">Add Exam</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='manage') }}">Manage Exam</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='add_student') }}">Add Student</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='add_staff') }}">Add Staff</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('staff_view') }}">Staff View</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='add_department') }}">Add Bench Info</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='mark_absent_new') }}">Mark Absent</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('absentees_statement') }}">Absentees Statement</a></li>
+        </ul>
+    </div>
+
+    
+        <center>
+            <img src="https://da.alagappauniversity.ac.in/Assets/img/logo/home_logo.png" height="140" alt="Alagappa University Logo">
+        </center>
+        <h1>📜 EXAM SCHEDULE</h1>
+
+        <!-- Filter Form -->
+        <form method="GET" action="/index" class="mb-5">
+            <div class="row g-2 align-items-end justify-content-center">
+                <div class="col-md-4 col-sm-12">
+                    <label for="semester" class="form-label fw-bold">Filter by Semester:</label>
+                    <select name="semester" id="semester" class="form-select">
+                        <option value="" {% if not request.args.get('semester') %}selected{% endif %}>All Semesters</option>
+                        <option value="1" {% if request.args.get('semester') == '1' %}selected{% endif %}>Sem 1</option>
+                        <option value="2" {% if request.args.get('semester') == '2' %}selected{% endif %}>Sem 2</option>
+                        <option value="3" {% if request.args.get('semester') == '3' %}selected{% endif %}>Sem 3</option>
+                        <option value="4" {% if request.args.get('semester') == '4' %}selected{% endif %}>Sem 4</option>
+                        <option value="5" {% if request.args.get('semester') == '5' %}selected{% endif %}>Sem 5</option>
+                        <option value="6" {% if request.args.get('semester') == '6' %}selected{% endif %}>Sem 6</option>
+                    </select>
+                </div>
+                <div class="col-md-4 col-sm-12">
+                    <label for="department" class="form-label fw-bold">Filter by Department:</label>
+                    <select name="department" id="department" class="form-select">
+                        <option value="" {% if not request.args.get('department') %}selected{% endif %}>All Departments</option>
+                        <option value="CHE" {% if request.args.get('department') == 'CHE' %}selected{% endif %}>CHE</option>
+                        <option value="CS" {% if request.args.get('department') == 'CS' %}selected{% endif %}>CS</option>
+                        <option value="MATHS" {% if request.args.get('department') == 'MATHS' %}selected{% endif %}>MATHS</option>
+                        <option value="ALL" {% if request.args.get('department') == 'ALL' %}selected{% endif %}>ALL</option>
+                    </select>
+                </div>
+                <div class="col-md-3 col-sm-12">
+                    <button type="submit" class="btn btn-primary w-100">Apply Filter</button>
+                </div>
+            </div>
+
+            <div class="mt-4 d-flex justify-content-center flex-wrap gap-2">
+                <a id="downloadPdfBtn" class="btn btn-success">Download Exam PDF</a>
+               
+            </div>
+        </form>
+
+        <!-- Exam Schedule Table -->
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover" id="examTable">
+                <thead class="table-dark">
+                    <tr>
+                        <th>S.No</th>
+                        <th>College Code</th>
+                        <th>Programme Code</th>
+                        <th>Course Code</th>
+                        <th>Course Name</th>
+                        <th>Register Number</th>
+                        <th>Exam Date</th>
+                        <th>Exam Session</th>
+                        <th>Exam Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if exams %}
+                        {% for exam in exams %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>{{ exam.college_code or '-' }}</td>
+                                <td>{{ exam.department_code or '-' }}</td>
+                                <td>{{ exam.exam_code }}</td>
+                                <td>{{ exam.subject }}</td>
+                                <td>{{ exam.register_range or '-' }}</td>
+                                <td>{{ exam.exam_date }}</td>
+                                <td>{{ exam.exam_session or '-' }}</td>
+                                <td>{{ exam.start_time }} - {{ exam.end_time }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="9" class="text-center py-4 text-muted">No exams scheduled.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Hamburger & Mobile Menu Toggle
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const overlay = document.getElementById('overlay');
+
+        function closeMenu() {
+            hamburgerBtn.classList.remove('active');
+            mobileMenu.classList.remove('active');
+            overlay.classList.remove('active');
+        }
+
+        hamburgerBtn.addEventListener('click', () => {
+            hamburgerBtn.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            overlay.classList.toggle('active');
+        });
+
+        // Close menu when clicking a link
+        document.querySelectorAll('#mobileMenu .nav-link').forEach(link => {
+            link.addEventListener('click', closeMenu);
+        });
+
+        // Close menu when clicking overlay
+        overlay.addEventListener('click', closeMenu);
+
+        // Update PDF download link dynamically
+        const downloadBtn = document.getElementById('downloadPdfBtn');
+        const semesterSelect = document.getElementById('semester');
+        const departmentSelect = document.getElementById('department');
+
+        function updatePdfLink() {
+            const sem = semesterSelect.value || '';
+            const dept = departmentSelect.value || '';
+            downloadBtn.href = `/download_pdf?semester=${encodeURIComponent(sem)}&department=${encodeURIComponent(dept)}`;
+        }
+        updatePdfLink();
+        semesterSelect.addEventListener('change', updatePdfLink);
+        departmentSelect.addEventListener('change', updatePdfLink);
+    </script>
+</body>
+</html>

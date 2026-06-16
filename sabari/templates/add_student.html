@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Student</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('https://www.alagappauniversity.ac.in/img/core-img/alu-slide1.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        .form-container {
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+            max-width: 800px;
+            width: 100%;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            color: rgb(0, 6, 12);
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .page-title {
+            color: rgb(0, 6, 12);
+            font-family: fantasy;
+            font-size: 2.4rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-control,
+        .form-select {
+            font-size: 1rem;
+            padding: 0.55rem 0.75rem;
+        }
+
+        .nav-tabs .nav-link {
+            color: rgb(0, 6, 12);
+            font-weight: 600;
+            border: 2px solid transparent;
+        }
+
+        .nav-tabs .nav-link:hover {
+            border-color: #0d6efd;
+            color: #0d6efd;
+        }
+
+        .nav-tabs .nav-link.active {
+            background-color: #0d6efd;
+            color: white;
+            border-color: #0d6efd;
+        }
+
+        .tab-content {
+            background-color: transparent;
+            border: 1px solid #dee2e6;
+            border-top: none;
+            padding: 20px;
+            border-radius: 0 0 12px 12px;
+        }
+
+        .pdf-preview {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .student-row {
+            background-color: white;
+            padding: 10px;
+            margin: 5px 0;
+            border-left: 4px solid #0d6efd;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .error-message {
+            background-color: #f8d7da;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 5px 0;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+
+        .success-message {
+            background-color: #d4edda;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 5px 0;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .file-upload-area {
+            border: 2px dashed #0d6efd;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            background-color: #f0f7ff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-upload-area:hover {
+            border-color: #0a58ca;
+            background-color: #e7f1ff;
+        }
+
+        .file-upload-area.drag-over {
+            border-color: #0a58ca;
+            background-color: #d1e0ff;
+        }
+
+        .uploaded-file-name {
+            color: #28a745;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- University Logo -->
+    <center>
+        <img src="https://da.alagappauniversity.ac.in/Assets/img/logo/home_logo.png" 
+             height="200" width="600" alt="Alagappa University Logo" class="my-3">
+    </center>
+
+    <div class="container form-container">
+
+        <h1 class="my-4 text-center page-title">Add New Student</h1>
+
+        <!-- Flash Message -->
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            {% for message in messages %}
+              {% if '[OK]' in message %}
+                <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
+              {% else %}
+                <div class="alert alert-danger alert-dismissible fade show text-center" role="alert">
+              {% endif %}
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <!-- Tab Navigation -->
+        <ul class="nav nav-tabs mb-0" id="addStudentTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="manual-tab" data-bs-toggle="tab" data-bs-target="#manual-form" type="button" role="tab" aria-controls="manual-form" aria-selected="true">
+                    📝 Add Manually
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="addStudentTabContent">
+
+            <!-- Manual Form Tab Only (PDF Upload Removed) -->
+            <div class="tab-pane fade show active" id="manual-form" role="tabpanel" aria-labelledby="manual-tab">
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label for="roll_no" class="form-label">Roll Number:</label>
+                            <input type="text" name="roll_no" id="roll_no" class="form-control" 
+                                   placeholder="e.g., 23CS001" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="name" class="form-label">Full Name:</label>
+                            <input type="text" name="name" id="name" class="form-control" 
+                                   placeholder="Enter student name" required>
+                        </div>
+                    </div>
+
+                    <div class="row g-4 mt-3">
+                        <div class="col-md-6">
+                            <label for="email" class="form-label">Email:</label>
+                            <input type="email" name="email" id="email" class="form-control" 
+                                   placeholder="student@alagappauniversity.ac.in" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="department" class="form-label">Department:</label>
+                            <select name="department" id="department" class="form-select" required>
+                                <option value="" disabled selected>Select Dept</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="semester" class="form-label">Semester:</label>
+                            <select name="semester" id="semester" class="form-select" required>
+                                <option value="" disabled selected>Select Sem</option>
+                                <option value="1">Sem 1</option>
+                                <option value="2">Sem 2</option>
+                                <option value="3">Sem 3</option>
+                                <option value="4">Sem 4</option>
+                                <option value="5">Sem 5</option>
+                                <option value="6">Sem 6</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Arrear Student Section -->
+                    <div class="row g-4 mt-3">
+                        <div class="col-md-6">
+                            <label for="is_arrear" class="form-label">Is Student an Arrear?</label>
+                            <select name="is_arrear" id="is_arrear" class="form-select" required>
+                                <option value="" disabled selected>Select Option</option>
+                                <option value="0">No, Regular Student</option>
+                                <option value="1">Yes, Student has Arrear</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6" id="arrear_sem_div" style="display: none;">
+                            <label for="arrear_semester" class="form-label">Arrear Semester (Previous Exam):</label>
+                            <select name="arrear_semester" id="arrear_semester" class="form-select">
+                                <option value="" disabled selected>Select Arrear Sem</option>
+                                <option value="1">Sem 1</option>
+                                <option value="2">Sem 2</option>
+                                <option value="3">Sem 3</option>
+                                <option value="4">Sem 4</option>
+                                <option value="5">Sem 5</option>
+                                <option value="6">Sem 6</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row g-4 mt-3" id="exam_code_div" style="display: none;">
+                        <div class="col-md-12">
+                            <label for="arrear_exam_code" class="form-label">Arrear Exam Code (Exam for which student is arrear):</label>
+                            <input type="text" name="arrear_exam_code" id="arrear_exam_code" class="form-control" 
+                                   placeholder="e.g., PHY2024001" 
+                                   title="Enter the exam code for which the student has arrear">
+                            <small class="form-text text-muted">The student will be allocated to this exam with same semester students</small>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <label for="image" class="form-label">Student Photo (JPG/PNG):</label>
+                        <input type="file" name="image" id="image" class="form-control" 
+                               accept="image/*" required>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-success btn-md px-5">
+                            Add Student
+                        </button>
+                        <a href="{{ url_for('index') }}" class="btn btn-secondary btn-md px-5 ms-3">
+                            Back to Exam Schedule
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // ==================== MANUAL FORM SCRIPTS ====================
+
+        // Show/hide arrear fields based on selection
+        document.getElementById('is_arrear').addEventListener('change', function() {
+            const arrearSemDiv = document.getElementById('arrear_sem_div');
+            const examCodeDiv = document.getElementById('exam_code_div');
+            const arrearSemSelect = document.getElementById('arrear_semester');
+            const examCodeInput = document.getElementById('arrear_exam_code');
+            
+            if (this.value === '1') {
+                // Show arrear fields
+                arrearSemDiv.style.display = 'block';
+                examCodeDiv.style.display = 'block';
+                arrearSemSelect.required = true;
+                examCodeInput.required = true;
+            } else {
+                // Hide arrear fields and clear values
+                arrearSemDiv.style.display = 'none';
+                examCodeDiv.style.display = 'none';
+                arrearSemSelect.required = false;
+                examCodeInput.required = false;
+                arrearSemSelect.value = '';
+                examCodeInput.value = '';
+            }
+        });
+
+        // ==================== PDF UPLOAD SCRIPTS ====================
+
+        const fileUploadArea = document.getElementById('file-upload-area');
+        const pdfFileInput = document.getElementById('pdf_file');
+        const previewBtn = document.getElementById('preview-btn');
+        const fileNameDisplay = document.getElementById('file-name-display');
+        const pdfForm = document.getElementById('pdf-upload-form');
+
+        // Handle drag and drop
+        fileUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileUploadArea.classList.add('drag-over');
+        });
+
+        fileUploadArea.addEventListener('dragleave', () => {
+            fileUploadArea.classList.remove('drag-over');
+        });
+
+        fileUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileUploadArea.classList.remove('drag-over');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                const file = files[0];
+                if (file.type === 'application/pdf') {
+                    pdfFileInput.files = files;
+                    displayFileName(file);
+                } else {
+                    alert('Please drop a PDF file only');
+                }
+            }
+        });
+
+        // Handle click to upload
+        fileUploadArea.addEventListener('click', () => {
+            pdfFileInput.click();
+        });
+
+        // Handle file selection
+        pdfFileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                displayFileName(e.target.files[0]);
+            }
+        });
+
+        function displayFileName(file) {
+            fileNameDisplay.textContent = '✓ Selected: ' + file.name + ' (' + (file.size / 1024).toFixed(2) + ' KB)';
+            fileNameDisplay.style.display = 'block';
+            previewBtn.style.display = 'inline-block';
+        }
+
+        // Preview and extract
+        previewBtn.addEventListener('click', async function() {
+            if (!pdfFileInput.files.length) {
+                alert('Please select a PDF file');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('pdf_file', pdfFileInput.files[0]);
+            formData.append('action', 'preview');
+
+            previewBtn.disabled = true;
+            previewBtn.innerHTML = '⏳ Processing PDF...';
+
+            try {
+                const response = await fetch('{{ url_for("upload_students_pdf") }}', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                previewBtn.disabled = false;
+                previewBtn.innerHTML = '👁️ Preview & Extract Data';
+
+                if (data.success) {
+                    displayPreview(data.students, data.errors);
+                } else {
+                    displayErrors(data.errors || ['Failed to process PDF']);
+                }
+            } catch (error) {
+                previewBtn.disabled = false;
+                previewBtn.innerHTML = '👁️ Preview & Extract Data';
+                displayErrors(['Error: ' + error.message]);
+            }
+        });
+
+        function displayPreview(students, errors) {
+            const previewContent = document.getElementById('preview-content');
+            const errorSection = document.getElementById('error-section');
+            const buttonSection = document.getElementById('button-section');
+            const previewSection = document.getElementById('preview-section');
+
+            previewContent.innerHTML = '';
+            errorSection.innerHTML = '';
+            buttonSection.innerHTML = '';
+
+            if (errors && errors.length > 0) {
+                let errorHTML = '<div style="margin-bottom: 20px;"><h5 style="color: #dc3545;">⚠️ Warnings/Errors:</h5>';
+                errors.forEach(err => {
+                    errorHTML += '<div class="error-message">' + err + '</div>';
+                });
+                errorHTML += '</div>';
+                errorSection.innerHTML = errorHTML;
+            }
+
+            if (students && students.length > 0) {
+                let html = '<p><strong>' + students.length + ' student(s) found:</strong></p>';
+                students.forEach((student, idx) => {
+                    html += `<div class="student-row">
+                        <strong>${idx + 1}.</strong> 
+                        ${student.roll_no || 'N/A'} | 
+                        ${student.name || 'N/A'} | 
+                        ${student.email || 'N/A'} | 
+                        ${student.department || 'N/A'} | 
+                        Sem ${student.semester || 'N/A'}
+                        ${student.is_arrear === '1' ? '<br><em style="color: #ff6b6b;">⚠️ Arrear: Sem ' + (student.arrear_semester || 'N/A') + '</em>' : ''}
+                    </div>`;
+                });
+                previewContent.innerHTML = html;
+
+                buttonSection.innerHTML = `
+                    <button type="button" class="btn btn-success btn-md px-5" id="confirm-upload-btn">
+                        ✓ Confirm & Upload
+                    </button>
+                    <button type="button" class="btn btn-warning btn-md px-5 ms-2" id="cancel-upload-btn">
+                        ✗ Cancel
+                    </button>
+                `;
+
+                document.getElementById('confirm-upload-btn').addEventListener('click', uploadStudents);
+                document.getElementById('cancel-upload-btn').addEventListener('click', () => {
+                    previewSection.style.display = 'none';
+                });
+            } else {
+                previewContent.innerHTML = '<p style="color: #dc3545;">No valid student data found in PDF.</p>';
+            }
+
+            previewSection.style.display = 'block';
+        }
+
+        function displayErrors(errors) {
+            const errorSection = document.getElementById('error-section');
+            const previewSection = document.getElementById('preview-section');
+            
+            let html = '<h5 style="color: #dc3545;">❌ Error:</h5>';
+            errors.forEach(err => {
+                html += '<div class="error-message">' + err + '</div>';
+            });
+            errorSection.innerHTML = html;
+            previewSection.style.display = 'block';
+        }
+
+        async function uploadStudents() {
+            const formData = new FormData();
+            formData.append('pdf_file', pdfFileInput.files[0]);
+            formData.append('action', 'upload');
+
+            const confirmBtn = document.getElementById('confirm-upload-btn');
+            confirmBtn.disabled = true;
+            confirmBtn.innerHTML = '⏳ Uploading...';
+
+            try {
+                const response = await fetch('{{ url_for("upload_students_pdf") }}', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('✓ ' + data.message);
+                    // Reset form and hide preview
+                    pdfFileInput.value = '';
+                    fileNameDisplay.style.display = 'none';
+                    previewBtn.style.display = 'none';
+                    document.getElementById('preview-section').style.display = 'none';
+                    // Optionally redirect
+                    setTimeout(() => {
+                        window.location.href = '{{ url_for("index") }}';
+                    }, 1500);
+                } else {
+                    displayErrors(data.errors || ['Failed to upload students']);
+                    confirmBtn.disabled = false;
+                    confirmBtn.innerHTML = '✓ Confirm & Upload';
+                }
+            } catch (error) {
+                displayErrors(['Error: ' + error.message]);
+                confirmBtn.disabled = false;
+                confirmBtn.innerHTML = '✓ Confirm & Upload';
+            }
+        }
+
+        // ==================== LOAD DEPARTMENTS ====================
+
+        // Load departments dynamically
+        window.addEventListener('DOMContentLoaded', function() {
+            loadDepartmentsForAddStudent();
+        });
+
+        function loadDepartmentsForAddStudent() {
+            fetch('/api/departments')
+                .then(response => response.json())
+                .then(data => {
+                    const departmentSelect = document.getElementById('department');
+                    data.departments.forEach(dept => {
+                        const option = document.createElement('option');
+                        option.value = dept;
+                        option.textContent = dept;
+                        departmentSelect.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading departments:', error);
+                });
+        }
+    </script>
+</body>
+</html>

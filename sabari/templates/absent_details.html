@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Absentees Statement</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1));
+            background-color: #f5f7fa;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            position: relative;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+
+        .back-button a {
+            padding: 8px 15px;
+            background-color: #34495e;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 12px;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(52, 73, 94, 0.2);
+        }
+
+        .back-button a:hover {
+            background-color: #2c3e50;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 73, 94, 0.3);
+        }
+
+        .print-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .print-button button {
+            padding: 8px 15px;
+            background-color: #5da28d;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(93, 162, 141, 0.2);
+        }
+
+        .print-button button:hover {
+            background-color: #4a8a74;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(93, 162, 141, 0.3);
+        }
+
+        /* Header */
+        .report-header {
+            text-align: center;
+            border-bottom: 2px solid #000;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .college-name {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .university-name {
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .statement-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        /* Hall Details */
+        .hall-details {
+            position: absolute;
+            top: 95px;
+            left: 40px;
+            font-size: 12px;
+        }
+
+        .hall-details-label {
+            font-weight: bold;
+            font-size: 11px;
+        }
+
+        .hall-details-value {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        /* Dropdown */
+        .filter-box {
+            margin: 30px 0 20px;
+            text-align: center;
+        }
+
+        select {
+            padding: 6px 10px;
+            font-size: 12px;
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+        }
+
+        th {
+            background-color: #34495e;
+            color: white;
+            padding: 10px;
+            border: 1px solid #ddd;
+            font-size: 10px;
+            text-transform: uppercase;
+        }
+
+        td {
+            padding: 8px 10px;
+            border: 1px solid #ddd;
+        }
+
+        tr:nth-child(even) td {
+            background-color: #f9f9f9;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 20px;
+            font-style: italic;
+            color: #666;
+        }
+
+        /* Print */
+        @media print {
+            body {
+                background-color: #fff;
+                padding: 0;
+            }
+            .back-button,
+            .print-button,
+            .filter-box {
+                display: none;
+            }
+            .container {
+                box-shadow: none;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="back-button">
+    <a href="{{ url_for('seating') }}">← Back</a>
+</div>
+
+<div class="print-button">
+    <button onclick="window.print()">🖨️ Print</button>
+</div>
+
+<div class="container">
+
+    <!-- Header -->
+    <div class="report-header">
+        <div class="college-name">ALAGAPPA GOVT ARTS COLLEGE, KARAIKUDI-3</div>
+        <div class="university-name">ALAGAPPA UNIVERSITY EXAMINATION</div>
+        <div class="statement-title">ABSENTEES STATEMENT</div>
+    </div>
+
+    <!-- Hall Details -->
+    <div class="hall-details">
+        <div class="hall-details-label">HALL:</div>
+        <div class="hall-details-value">{{ hall_no }}</div>
+
+        <div class="hall-details-label">SESSION:</div>
+        <div class="hall-details-value">{{ session_type }}</div>
+    </div>
+
+    <!-- Date Dropdown -->
+    <div class="filter-box">
+        <form method="get">
+            <label><strong>Select Exam Date:</strong></label>
+            <select name="exam_date" onchange="this.form.submit()">
+                <option value="">-- Select Date --</option>
+                {% for d in exam_dates %}
+                    <option value="{{ d }}" {% if d == selected_date %}selected{% endif %}>
+                        {{ d }}
+                    </option>
+                {% endfor %}
+            </select>
+        </form>
+    </div>
+
+    <!-- Single Table -->
+    {% if selected_date and exams_data %}
+    <table>
+        <thead>
+            <tr>
+                <th>S.NO</th>
+                <th>COURSE</th>
+                <th>SUB CODE</th>
+                <th>EXAM CODE</th>
+                <th>TOTAL</th>
+                <th>PRESENT</th>
+                <th>ABSENT</th>
+                <th>REG NO (Absent)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% set row_count = 0 %}
+            {% for exam_code, exam_info in exams_data.items() | sort %}
+                {% if exam_info.exam_date == selected_date %}
+                    {% for dept, dept_info in exam_info.departments.items() | sort %}
+                        {% set row_count = row_count + 1 %}
+                        <tr>
+                            <td class="text-center">{{ row_count }}</td>
+                            <td>{{ dept_info.course }}</td>
+                            <td class="text-center">{{ dept_info.subcode }}</td>
+                            <td class="text-center">{{ exam_code }}</td>
+                            <td class="text-center">{{ dept_info.total }}</td>
+                            <td class="text-center" style="color:#4CAF50;"><strong>{{ dept_info.present }}</strong></td>
+                            <td class="text-center" style="color:#f44336;"><strong>{{ dept_info.absent }}</strong></td>
+                            <td style="font-size: 12px;">
+                                {% if dept_info.absentees %}
+                                    {% for absentee in dept_info.absentees %}
+                                        {{ absentee.roll_no }}<br>
+                                    {% endfor %}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Invigilator Section Below Table -->
+    {% set all_invigilators = [] %}
+    {% for exam_code, exam_info in exams_data.items() %}
+        {% if exam_info.exam_date == selected_date %}
+            {% for dept, dept_info in exam_info.departments.items() %}
+                {% if dept_info.invigilator and dept_info.invigilator not in all_invigilators %}
+                    {% set _ = all_invigilators.append(dept_info.invigilator) %}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+    
+    <div style="margin-top: 20px; padding: 15px; background-color: #f9f9f9; border-left: 4px solid #003366;">
+        <strong>INVIGILATOR:</strong> {{ all_invigilators | join(', ') if all_invigilators else 'Not Assigned' }}
+    </div>
+    {% else %}
+        <div class="no-data">
+            {% if not selected_date %}
+                Select a date to view absentees
+            {% else %}
+                No data available for the selected date
+            {% endif %}
+        </div>
+    {% endif %}
+
+</div>
+
+</body>
+</html>

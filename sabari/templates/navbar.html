@@ -1,0 +1,212 @@
+<!-- Unified Navbar Component - Include in all pages except home.html -->
+<!-- Tamil Font Support -->
+<link rel="stylesheet" href="{{ url_for('static', filename='tamil-font.css') }}">
+
+<style>
+    /* ===== PREMIUM HAMBURGER BUTTON ===== */
+    .hamburger {
+        display: flex !important;
+        flex-direction: column;
+        justify-content: center;
+        width: 42px;
+        height: 42px;
+        background: linear-gradient(135deg, #5b7b9e, #7cb9e8);
+        border-radius: 12px;
+        border: none;
+        cursor: pointer;
+        padding: 8px;
+        gap: 6px;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+        transition: all 0.35s ease;
+        margin-right: 10px;
+    }
+
+    /* Hover glow */
+    .hamburger:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 18px rgba(124, 185, 232, 0.8);
+    }
+
+    /* Hamburger lines */
+    .hamburger span {
+        width: 100%;
+        height: 4px;
+        background: #ffffff;
+        border-radius: 5px;
+        transition: all 0.45s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    }
+
+    /* ===== ANIMATION TO CLOSE (X) ===== */
+    .hamburger.active span:nth-child(1) {
+        transform: translateY(10px) rotate(45deg);
+    }
+
+    .hamburger.active span:nth-child(2) {
+        opacity: 0;
+        transform: scale(0);
+    }
+
+    .hamburger.active span:nth-child(3) {
+        transform: translateY(-10px) rotate(-45deg);
+    }
+
+    .hamburger:active {
+        transform: scale(0.95);
+    }
+
+    /* Navbar Styling */
+    .navbar {
+        background: rgba(51, 65, 85, 0.92);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+        padding: 0.8rem 1rem;
+    }
+
+    .navbar-brand {
+        font-weight: 700;
+        color: white !important;
+        font-size: 1.4rem;
+    }
+
+    /* Off-canvas menu styling */
+    .offcanvas-menu {
+        position: fixed;
+        right: -300px;
+        top: 70px;
+        width: 300px;
+        height: calc(100vh - 70px);
+        background: white;
+        box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+        z-index: 999;
+        overflow-y: auto;
+        padding: 20px 0;
+        transition: right 0.45s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    }
+
+    .offcanvas-menu.active {
+        right: 0;
+    }
+
+    .offcanvas-menu .navbar-nav {
+        flex-direction: column;
+    }
+
+    .offcanvas-menu .nav-item {
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .offcanvas-menu .nav-link {
+        padding: 12px 20px;
+        display: block;
+        color: #34495e !important;
+        font-weight: 600;
+    }
+
+    .offcanvas-menu .nav-link:hover {
+        color: #5b7b9e !important;
+        background-color: rgba(91, 123, 158, 0.08);
+    }
+
+    /* Overlay for menu */
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 998;
+        display: none;
+    }
+
+    .overlay.active {
+        display: block;
+    }
+
+    /* Always hide Bootstrap's default dropdown menu */
+    .navbar-expand-lg .navbar-collapse {
+        display: none !important;
+    }
+</style>
+
+<!-- Overlay for mobile menu -->
+<div class="overlay" id="overlay"></div>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">📜 Exam Schedule</a>
+        <button class="hamburger" id="hamburgerBtn" aria-label="Toggle menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="/">📊 Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('seating') }}">Seating Plan</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('seating_details') }}">Seating Details</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('get_hall_ticket') }}">Hall Ticket</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='add_exam') }}">Add Exam</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='manage') }}">Manage Exam</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='add_student') }}">Add Student</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='add_staff') }}">Add Staff</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('staff_view') }}">Staff View</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='add_department') }}">Add Bench Info</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='mark_absent_new') }}">Mark Absent</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('absentees_statement') }}">Absentees Statement</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Off-canvas Mobile Menu -->
+<div class="offcanvas-menu" id="mobileMenu">
+    <ul class="navbar-nav">
+        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="/">📊 Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('seating') }}">Seating Plan</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('seating_details') }}">Seating Details</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('get_hall_ticket') }}">Hall Ticket</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='add_exam') }}">Add Exam</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='manage') }}">Manage Exam</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='add_student') }}">Add Student</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='add_staff') }}">Add Staff</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('staff_view') }}">Staff View</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='add_department') }}">Add Bench Info</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='mark_absent_new') }}">Mark Absent</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('absentees_statement') }}">Absentees Statement</a></li>
+    </ul>
+</div>
+
+<script>
+    // Hamburger Menu Toggle
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const overlay = document.getElementById('overlay');
+
+    if (hamburgerBtn && mobileMenu && overlay) {
+        hamburgerBtn.addEventListener('click', () => {
+            hamburgerBtn.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            overlay.classList.toggle('active');
+        });
+
+        overlay.addEventListener('click', () => {
+            hamburgerBtn.classList.remove('active');
+            mobileMenu.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+
+        // Close menu when clicking a link
+        const navLinks = mobileMenu.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                hamburgerBtn.classList.remove('active');
+                mobileMenu.classList.remove('active');
+                overlay.classList.remove('active');
+            });
+        });
+    }
+</script>

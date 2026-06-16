@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Exams - Exam Schedule</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        /* ===== PREMIUM HAMBURGER BUTTON ===== */
+        .hamburger {
+            display: flex !important;
+            flex-direction: column;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #5b7b9e, #7cb9e8);
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            gap: 6px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+            transition: all 0.35s ease;
+            margin-right: 10px;
+        }
+
+        .hamburger:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 18px rgba(124, 185, 232, 0.8);
+        }
+
+        .hamburger span {
+            width: 100%;
+            height: 4px;
+            background: #ffffff;
+            border-radius: 5px;
+            transition: all 0.45s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: translateY(10px) rotate(45deg);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+            transform: scale(0);
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: translateY(-10px) rotate(-45deg);
+        }
+
+        .hamburger:active {
+            transform: scale(0.95);
+        }
+
+        /* Top Navigation Bar */
+        .top-navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(51, 65, 85, 0.92);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+            padding: 0.8rem 1rem;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: white !important;
+            font-size: 1.2rem;
+            margin: 0;
+        }
+
+        /* Off-canvas menu styling */
+        .offcanvas-menu {
+            position: fixed;
+            right: -300px;
+            top: 60px;
+            width: 300px;
+            height: calc(100vh - 60px);
+            background: white;
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+            z-index: 999;
+            overflow-y: auto;
+            padding: 20px 0;
+            transition: right 0.45s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        .offcanvas-menu.active {
+            right: 0;
+        }
+
+        .offcanvas-menu .navbar-nav {
+            flex-direction: column;
+        }
+
+        .offcanvas-menu .nav-item {
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .offcanvas-menu .nav-link {
+            padding: 12px 20px;
+            display: block;
+            color: #34495e !important;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .offcanvas-menu .nav-link:hover {
+            color: #5b7b9e !important;
+            background-color: rgba(91, 123, 158, 0.08);
+        }
+
+        /* Overlay for menu */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 998;
+            display: none;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        body {
+            background-image: url('https://www.alagappauniversity.ac.in/img/core-img/alu-slide1.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            padding-top: 80px;
+        }
+        .error-message {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            padding: 1rem;
+            border-radius: 0.25rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Overlay for mobile menu -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Top Navigation Bar -->
+    <div class="top-navbar">
+        <h1 class="navbar-brand">📜 Exam Schedule</h1>
+        <button class="hamburger" id="hamburgerBtn" aria-label="Toggle menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </div>
+
+    <!-- Off-canvas Mobile Menu -->
+    <div class="offcanvas-menu" id="mobileMenu">
+        <ul class="navbar-nav">
+            <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">📊 Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('seating') }}">Seating Plan</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('seating_details') }}">Seating Details</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('get_hall_ticket') }}">Hall Ticket</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='add_exam') }}">Add Exam</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='manage') }}">Manage Exam</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='add_student') }}">Add Student</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='add_staff') }}">Add Staff</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('staff_view') }}">Staff View</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='add_department') }}">Add Bench Info</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='mark_absent_new') }}">Mark Absent</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('absentees_statement') }}">Absentees Statement</a></li>
+        </ul>
+    </div>
+
+    <center><img src="https://da.alagappauniversity.ac.in/Assets/img/logo/home_logo.png" height="200" width="600" alt="Alagappa University Logo"></center>
+    <div class="container">
+        <h1 class="my-4 text-center" style="color: rgb(0, 6, 12); font-family: fantasy;">📜 Manage Exams (Admin)</h1>
+
+        {% if error %}
+            <div class="error-message">{{ error }}</div>
+        {% endif %}
+
+        <!-- Exam Management Table -->
+        <table class="table table-bordered table-hover" id="examTable">
+            <thead class="table-dark">
+                <tr>
+                    <th>Exam Code</th>
+                    <th>Subject</th>
+                    <th>Semester</th>
+                    <th>Department</th>
+                    <th>Date</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if exams %}
+                    {% for exam in exams %}
+                        <tr>
+                            <td>{{ exam.exam_code }}</td>
+                            <td>{{ exam.subject }}</td>
+                            <td>{{ exam.semester }}</td>
+                            <td>{{ exam.department }}</td>
+                            <td>{{ exam.exam_date }}</td>
+                            <td>{{ exam.start_time }}</td>
+                            <td>{{ exam.end_time }}</td>
+                            <td>
+                                <!-- Edit Form (Inline) -->
+                                <form method="POST" action="/admin" class="d-inline">
+                                    <input type="hidden" name="action" value="edit">
+                                    <input type="hidden" name="exam_code" value="{{ exam.exam_code }}">
+                                    <input type="text" name="subject" value="{{ exam.subject }}" class="form-control d-inline-block" style="width: auto;" required>
+                                    <input type="text" name="semester" value="{{ exam.semester }}" class="form-control d-inline-block" style="width: 60px;" required>
+                                    <input type="text" name="department" value="{{ exam.department }}" class="form-control d-inline-block" style="width: 80px;" required>
+                                    <input type="text" name="exam_date" value="{{ exam.exam_date }}" class="form-control d-inline-block" style="width: 100px;" required>
+                                    <input type="text" name="start_time" value="{{ exam.start_time }}" class="form-control d-inline-block" style="width: 90px;" required>
+                                    <input type="text" name="end_time" value="{{ exam.end_time }}" class="form-control d-inline-block" style="width: 90px;" required>
+                                    <button type="submit" class="btn btn-primary btn-sm">Update</button>
+                                </form>
+                                <!-- Delete Form -->
+                                <form method="POST" action="/admin" class="d-inline">
+                                    <input type="hidden" name="action" value="delete">
+                                    <input type="hidden" name="exam_code" value="{{ exam.exam_code }}">
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this exam?')">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center">No exams available.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+
+        <!-- Navigation Links -->
+        <div class="text-center">
+            <a href="/index" class="btn btn-primary">Back to Schedule</a>
+            <a href="/add" class="btn btn-success">Add New Exam</a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Hamburger Menu Toggle
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const overlay = document.getElementById('overlay');
+
+        if (hamburgerBtn && mobileMenu && overlay) {
+            hamburgerBtn.addEventListener('click', () => {
+                hamburgerBtn.classList.toggle('active');
+                mobileMenu.classList.toggle('active');
+                overlay.classList.toggle('active');
+            });
+
+            overlay.addEventListener('click', () => {
+                hamburgerBtn.classList.remove('active');
+                mobileMenu.classList.remove('active');
+                overlay.classList.remove('active');
+            });
+
+            const navLinks = mobileMenu.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    hamburgerBtn.classList.remove('active');
+                    mobileMenu.classList.remove('active');
+                    overlay.classList.remove('active');
+                });
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+/* ===== TAMIL FONT SUPPORT ===== */
+
+/* Import Google Fonts - Noto Sans Tamil (supports Tamil script) */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap');
+
+/* Apply Tamil font globally */
+* {
+    --tamil-font: 'Noto Sans Tamil', sans-serif;
+}
+
+/* Tamil text class */
+.tamil-text {
+    font-family: 'Noto Sans Tamil', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+/* Tamil heading class */
+.tamil-heading {
+    font-family: 'Noto Sans Tamil', sans-serif;
+    font-weight: 600;
+    font-size: 20px;
+}
+
+/* Tamil title class */
+.tamil-title {
+    font-family: 'Noto Sans Tamil', sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+}
+
+/* Tamil small text */
+.tamil-small {
+    font-family: 'Noto Sans Tamil', sans-serif;
+    font-size: 14px;
+}
+
+/* Tamil label class */
+.tamil-label {
+    font-family: 'Noto Sans Tamil', sans-serif;
+    font-weight: 500;
+    font-size: 15px;
+}
+
+/* Apply Tamil font to data attributes */
+[data-tamil="true"] {
+    font-family: 'Noto Sans Tamil', sans-serif;
+}
+
+/* Alternative fonts if needed */
+.tamil-alt {
+    font-family: 'Noto Sans Tamil', 'Liberation Sans', sans-serif;
+}

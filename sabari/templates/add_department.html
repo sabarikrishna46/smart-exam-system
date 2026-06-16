@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Department Seating Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- Tamil Font Support -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='tamil-font.css') }}">
+    <style>
+        /* ===== PREMIUM HAMBURGER BUTTON ===== */
+        .hamburger {
+            display: flex !important;
+            flex-direction: column;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #5b7b9e, #7cb9e8);
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            gap: 6px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+            transition: all 0.35s ease;
+            margin-right: 10px;
+        }
+
+        /* Hover glow */
+        .hamburger:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 18px rgba(124, 185, 232, 0.8);
+        }
+
+        /* Hamburger lines */
+        .hamburger span {
+            width: 100%;
+            height: 4px;
+            background: #ffffff;
+            border-radius: 5px;
+            transition: all 0.45s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        /* ===== ANIMATION TO CLOSE (X) ===== */
+        .hamburger.active span:nth-child(1) {
+            transform: translateY(10px) rotate(45deg);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+            transform: scale(0);
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: translateY(-10px) rotate(-45deg);
+        }
+
+        .hamburger:active {
+            transform: scale(0.95);
+        }
+
+        /* Navbar Styling */
+        .navbar {
+            background: rgba(51, 65, 85, 0.92);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+            padding: 0.8rem 1rem;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: white !important;
+            font-size: 1.4rem;
+        }
+
+        /* Off-canvas menu styling */
+        .offcanvas-menu {
+            position: fixed;
+            right: -300px;
+            top: 70px;
+            width: 300px;
+            height: calc(100vh - 70px);
+            background: white;
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+            z-index: 999;
+            overflow-y: auto;
+            padding: 20px 0;
+            transition: right 0.45s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        .offcanvas-menu.active {
+            right: 0;
+        }
+
+        .offcanvas-menu .navbar-nav {
+            flex-direction: column;
+        }
+
+        .offcanvas-menu .nav-item {
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .offcanvas-menu .nav-link {
+            padding: 12px 20px;
+            display: block;
+            color: #34495e !important;
+            font-weight: 600;
+        }
+
+        .offcanvas-menu .nav-link:hover {
+            color: #5b7b9e !important;
+            background-color: rgba(91, 123, 158, 0.08);
+        }
+
+        /* Overlay for menu */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 998;
+            display: none;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        /* Always hide Bootstrap's default dropdown menu */
+        .navbar-expand-lg .navbar-collapse {
+            display: none !important;
+        }
+
+        body {
+            padding-top: 70px;
+            background-image: url('https://www.alagappauniversity.ac.in/img/core-img/alu-slide1.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding-top: 80px;
+        }
+
+
+        .form-container {
+            background-color: rgba(255, 255, 255, 0.96);
+            padding: 32px 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+            max-width: 900px;
+            width: 100%;
+            margin-top: 25px;
+            margin-bottom: 25px;
+        }
+
+        .page-title {
+            color: #000;
+            font-family: 'Georgia', serif;
+            font-weight: bold;
+            font-size: 2.4rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            letter-spacing: 1px;
+        }
+
+        .form-label {
+            color: #000;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 6px;
+        }
+
+        .form-control,
+        .form-select {
+            padding: 0.6rem 0.9rem;
+            font-size: 1rem;
+            border-radius: 8px;
+        }
+
+        small.text-muted {
+            font-size: 0.86rem;
+        }
+
+        .btn-success {
+            padding: 0.65rem 2.2rem;
+            font-size: 1.05rem;
+            border-radius: 8px;
+        }
+
+        .btn-secondary {
+            padding: 0.65rem 2rem;
+        }
+
+        .btn-info {
+            padding: 0.65rem 2.2rem;
+            font-size: 1.05rem;
+            border-radius: 8px;
+        }
+
+        .class-input-section {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            background-color: #f8f9fa;
+        }
+
+        .block-title {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            margin-top: 15px;
+        }
+
+        .class-row {
+            background-color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            border-left: 4px solid #28a745;
+        }
+
+        .class-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .input-group-text {
+            background-color: white;
+        }
+
+        .steps-info {
+            background-color: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .steps-info h5 {
+            color: #1976D2;
+            margin-bottom: 10px;
+        }
+
+        .steps-info ol {
+            margin-bottom: 0;
+            padding-left: 20px;
+        }
+
+        .steps-info li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Overlay for mobile menu -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">📜 Exam Schedule</a>
+            <button class="hamburger" id="hamburgerBtn" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">📊 Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('seating') }}">Seating Plan</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('seating_details') }}">Seating Details</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('get_hall_ticket') }}">Hall Ticket</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='add_exam') }}">Add Exam</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='manage') }}">Manage Exam</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='add_student') }}">Add Student</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='add_staff') }}">Add Staff</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('staff_view') }}">Staff View</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='add_department') }}">Add Bench Info</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='mark_absent_new') }}">Mark Absent</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('absentees_statement') }}">Absentees Statement</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Off-canvas Mobile Menu -->
+    <div class="offcanvas-menu" id="mobileMenu">
+        <ul class="navbar-nav">
+            <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">📊 Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('seating') }}">Seating Plan</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('seating_details') }}">Seating Details</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('get_hall_ticket') }}">Hall Ticket</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='add_exam') }}">Add Exam</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='manage') }}">Manage Exam</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='add_student') }}">Add Student</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='add_staff') }}">Add Staff</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('staff_view') }}">Staff View</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='add_department') }}">Add Bench Info</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='mark_absent_new') }}">Mark Absent</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('absentees_statement') }}">Absentees Statement</a></li>
+        </ul>
+    </div>
+
+    <center class="my-3">
+        <img src="https://da.alagappauniversity.ac.in/Assets/img/logo/home_logo.png" 
+             height="180" width="540" alt="Alagappa University">
+    </center>
+
+    <div class="container form-container">
+
+        <h1 class="page-title">Add Department Seating</h1>
+
+        <!-- Flash Message -->
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div class="alert alert-success alert-dismissible fade show text-center mb-4">
+              {{ messages[0] }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <!-- Information Steps -->
+        <div class="steps-info">
+            <h5>📝 How to Configure Department:</h5>
+            <ol>
+                <li>Select a department</li>
+                <li>Enter number of blocks</li>
+                <li>Enter number of classes per block</li>
+                <li>Click "Generate Forms" to create input fields</li>
+                <li>Enter number of benches for each class</li>
+                <li>Click "Save Department" to save configuration</li>
+            </ol>
+        </div>
+
+        <form method="POST" action="{{ url_for('add_department') }}" id="departmentForm">
+            <div class="row g-4">
+
+                <div class="col-md-6">
+                    <label class="form-label">Department Name:</label>
+                    <select name="department" class="form-select" id="departmentSelect" required>
+                        <option value="" disabled selected>Select Department</option>
+                        <option value="ALL">ALL - Common Hall</option>
+                        <option value="VA">வா - Tamil Commerce</option>
+                        <option value="PHY">PHY - Physics</option>
+                        <option value="CHEM">CHEM - Chemistry</option>
+                        <option value="BOT">BOT - Botany</option>
+                        <option value="ZOO">ZOO - Zoology</option>
+                        <option value="ECO">ECO - Economics</option>
+                        <option value="CS">CS - Computer Science</option>
+                        <option value="TAM">TAM - Tamil</option>
+                        <option value="ENG">ENG - English</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Number of Blocks:</label>
+                    <input type="number" name="num_blocks" class="form-control" id="numBlocks" 
+                           min="1" max="10" value="1" placeholder="e.g., 2" required>
+                    <small class="text-muted">E.g., COM has 2 blocks</small>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Classes per Block:</label>
+                    <input type="number" name="num_classes" class="form-control" id="numClasses" 
+                           min="1" max="20" value="1" placeholder="e.g., 6" required>
+                    <small class="text-muted">E.g., 6 classes</small>
+                </div>
+
+            </div>
+
+            <div class="text-center mt-4">
+                <button type="button" class="btn btn-info px-5" id="generateFormsBtn">
+                    ⚙️ Generate Forms
+                </button>
+            </div>
+
+            <!-- Dynamic Class Forms Section -->
+            <div id="classInputContainer" class="class-input-section" style="display:none;">
+                <h4 class="mb-4">📋 Enter Benches for Each Class:</h4>
+                <p class="text-muted"><strong>Note:</strong> Each bench can seat 3 students. Total capacity = benches × 3</p>
+                <div id="classFormsDiv"></div>
+
+                <div class="text-center mt-5">
+                    <button type="submit" class="btn btn-success px-5">
+                        ✅ Save Department Configuration
+                    </button>
+                    <a href="/" class="btn btn-primary px-4 ms-2">
+                        <i class="bi bi-house-door"></i> Back to Dashboard
+                    </a>
+                    <a href="{{ url_for('index') }}" class="btn btn-secondary px-4 ms-2">
+                        Back to Schedule
+                    </a>
+                </div>
+            </div>
+
+        </form>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Hamburger Menu Toggle
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const overlay = document.getElementById('overlay');
+
+        if (hamburgerBtn && mobileMenu && overlay) {
+            hamburgerBtn.addEventListener('click', () => {
+                hamburgerBtn.classList.toggle('active');
+                mobileMenu.classList.toggle('active');
+                overlay.classList.toggle('active');
+            });
+
+            overlay.addEventListener('click', () => {
+                hamburgerBtn.classList.remove('active');
+                mobileMenu.classList.remove('active');
+                overlay.classList.remove('active');
+            });
+
+            // Close menu when clicking a link
+            const navLinks = mobileMenu.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    hamburgerBtn.classList.remove('active');
+                    mobileMenu.classList.remove('active');
+                    overlay.classList.remove('active');
+                });
+            });
+        }
+        document.getElementById('generateFormsBtn').addEventListener('click', function() {
+            const numBlocks = parseInt(document.getElementById('numBlocks').value);
+            const numClasses = parseInt(document.getElementById('numClasses').value);
+            const department = document.getElementById('departmentSelect').value;
+
+            if (!department) {
+                alert('Please select a department first!');
+                return;
+            }
+
+            if (numBlocks < 1 || numClasses < 1) {
+                alert('Number of blocks and classes must be at least 1!');
+                return;
+            }
+
+            generateClassForms(numBlocks, numClasses, department);
+            document.getElementById('classInputContainer').style.display = 'block';
+        });
+
+        function generateClassForms(numBlocks, numClasses, department) {
+            const container = document.getElementById('classFormsDiv');
+            container.innerHTML = '';
+
+            for (let block = 1; block <= numBlocks; block++) {
+                // Block Title
+                const blockTitle = document.createElement('div');
+                blockTitle.className = 'block-title';
+                
+                // Special formatting for VA department with Tamil font
+                if (department === 'VA') {
+                    blockTitle.className = 'block-title tamil-heading';
+                    blockTitle.textContent = `வா தொகுதி ${block}`;
+                } else {
+                    blockTitle.textContent = `${department} Block ${block}`;
+                }
+                container.appendChild(blockTitle);
+
+                // Classes for this block
+                for (let classNo = 1; classNo <= numClasses; classNo++) {
+                    const classRow = document.createElement('div');
+                    classRow.className = 'class-row';
+
+                    const classLabel = document.createElement('div');
+                    classLabel.className = 'class-label';
+                    
+                    // Special formatting for VA department with Tamil font hall names
+                    if (department === 'VA') {
+                        classLabel.className = 'class-label tamil-text';
+                        // Generate hall number based on block and class (வா1, வா2, வா3, etc.)
+                        const hallNumber = (block - 1) * numClasses + classNo;
+                        classLabel.innerHTML = `<strong class="tamil-heading">வா${hallNumber}</strong> (Block ${block} - Class ${classNo})`;
+                    } else {
+                        classLabel.textContent = `${department} Block ${block} - Class ${classNo}`;
+                    }
+
+                    const inputDiv = document.createElement('div');
+                    inputDiv.className = 'input-group';
+
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    input.name = `bench_count_${block}_${classNo}`;
+                    input.className = 'form-control';
+                    input.min = '1';
+                    input.max = '50';
+                    input.value = '15';
+                    input.placeholder = 'e.g., 15';
+                    input.required = true;
+
+                    const span = document.createElement('span');
+                    span.className = 'input-group-text';
+                    span.textContent = 'benches (×3 = capacity)';
+
+                    inputDiv.appendChild(input);
+                    inputDiv.appendChild(span);
+
+                    classRow.appendChild(classLabel);
+                    classRow.appendChild(inputDiv);
+                    container.appendChild(classRow);
+                }
+            }
+        }
+
+        // Allow Enter key to trigger form generation
+        document.getElementById('numBlocks').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') document.getElementById('generateFormsBtn').click();
+        });
+        document.getElementById('numClasses').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') document.getElementById('generateFormsBtn').click();
+        });
+
+        // dynamically add any departments that aren't already hard‑coded
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('/api/departments')
+                .then(res => res.json())
+                .then(data => {
+                    const select = document.getElementById('departmentSelect');
+                    const existing = new Set(Array.from(select.options).map(o=>o.value));
+                    const displayMap = {
+                        'ALL': 'ALL - Common Hall',
+                        'VA': 'வா - Tamil Commerce',
+                        'PHY': 'PHY - Physics',
+                        'CHE': 'CHEM - Chemistry',
+                        'BOT': 'BOT - Botany',
+                        'ZOO': 'ZOO - Zoology',
+                        'ECO': 'ECO - Economics',
+                        'CS': 'CS - Computer Science',
+                        'TAM': 'TAM - TAM',
+                        'ENG': 'ENG - ENG',
+                        'MATHS': 'MATHS - MATHS',
+                        'GEO': 'GEO - GEO',
+                        'HIS': 'HIS - HIS',
+                        'BCA': 'BCA - BCA',
+                        'B.COM': 'B.COM - B.COM',
+                        'BBA': 'BBA - BBA'
+                    };
+                    data.departments.forEach(dept => {
+                        if (!existing.has(dept)) {
+                            const opt = document.createElement('option');
+                            opt.value = dept;
+                            opt.textContent = displayMap[dept] || dept;
+                            select.appendChild(opt);
+                        }
+                    });
+                })
+                .catch(err => console.error('Error loading departments:', err));
+        });
+
+    </script>
+</body>
+</html>

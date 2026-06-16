@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automated Notifications - Exam Schedule Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            line-height: 1.6;
+            color: #333;
+        }
+        .sk:hover{
+            color: #e74c3c;
+        }
+        .sk{
+            animation: hai 5s infinite;
+        }
+
+        @keyframes hai {
+            0%{color:rgb(22, 255, 224)}
+            10%{color:rgb(255, 5, 5)}
+            20% {color: rgb(0, 255, 98)}
+            30% {color:rgb(255, 0, 234)}
+            40%{color:rgb(255, 238, 0)}
+            50% {color: rgb(255, 72, 0)}
+            60%{color:rgb(255, 127, 8)}
+            70% {color: rgb(0, 183, 255)}
+            80%{color:orangered}
+            90% {color: rgb(0, 255, 34)}
+            100%{color:rgb(255, 255, 255)}
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 50px;
+            background-color: #2c3e50;
+            color: #fff;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-left: 20px;
+        }
+
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .nav-links .btn {
+            background-color: #3498db;
+            padding: 8px 15px;
+            border-radius: 5px;
+        }
+
+        .nav-links .btn:hover {
+            background-color: #2980b9;
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background-color: #fff;
+            margin: 2px 0;
+        }
+
+        .content {
+            height: 95vh;
+            text-align: center;
+            background-image: url('../static/pg13.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center center;
+        }
+
+        .content h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        .content p {
+            font-size: 18px;
+            color: #000000;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 10px 30px;
+            text-decoration: none;
+            color: #fff;
+            background-color: #3c47e7;
+            border-radius: 5px;
+            font-weight: 700;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        .btn:hover {
+            background-color: #c0392b;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #333;
+            color: #fff;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 60px;
+                left: 0;
+                width: 100%;
+                background-color: #2c3e50;
+                padding: 20px;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .nav-links li {
+                margin: 10px 0;
+            }
+
+            .content h1 {
+                font-size: 28px;
+            }
+
+            .content p {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <h1>📝EXAM SCHEDULE MANAGEMENT SYSTEM</h1>
+            </div>
+            <ul class="nav-links">
+               <li><a class="sk" href="{{url_for('home')}}">🏠home</a></li>
+    <li><a class="sk" href="{{url_for('home')}}#features">🌟Features</a></li>
+    <li><a class="sk" href="{{url_for('home')}}#about">📄About</a></li>
+    <li><a class="sk" href="{{url_for('home')}}#contact">☎️Contact</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <section class="content"><br><br><br>
+        <h1 style="color: #000000;">Automated Notifications</h1>
+        <p>Stay informed with our automated notification system. Receive timely reminders about upcoming exams, schedule changes, and important deadlines via email or in-app notifications. Users can customize their notification preferences to receive alerts that matter most to them.</p>
+        <p>This feature ensures that students, faculty, and administrators are always up-to-date, reducing the risk of missing critical exam-related information. Notifications are sent in real-time when schedules are updated or new announcements are made.</p>
+      <a href="{{url_for('home')}}#features" class="btn primary-btn">back to feature</a>
+    </section>
+
+    <footer>
+        <p>© 2025 ExamSchedule. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('.nav-links');
+
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+    </script>
+</body>
+</html>

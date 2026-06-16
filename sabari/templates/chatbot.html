@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Exam Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f7f7f7;
+            padding: 20px;
+        }
+        #chat-container {
+            max-width: 600px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 2px 10px rgba(0,0,0,0.1);
+        }
+        #reply {
+            margin-top: 15px;
+            padding: 10px;
+            background: #e0f7fa;
+            border-radius: 5px;
+            min-height: 50px;
+        }
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 15px;
+            font-size: 16px;
+            border: none;
+            background: #00796b;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #004d40;
+        }
+    </style>
+</head>
+<body>
+    <div id="chat-container">
+        <h2>Exam Chatbot 🤖</h2>
+        <p>Hello! Ask me about exams.</p>
+        <input type="text" id="message" placeholder="E.g., what exams are available for CS sem 6">
+        <button onclick="sendMessage()">Send</button>
+
+        <div id="reply"></div>
+    </div>
+
+    <script>
+function speakText(text) {
+    if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-IN';
+        window.speechSynthesis.speak(utterance);
+    } else {
+        console.warn("🔊 Speech synthesis not supported in this browser.");
+    }
+}
+
+function sendMessage() {
+    const msg = document.getElementById("message").value;
+    if (!msg.trim()) return;
+
+    fetch("/chatbot", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "message=" + encodeURIComponent(msg)
+    })
+    .then(res => res.json())
+    .then(data => {
+        const replyElem = document.getElementById("reply");
+        replyElem.innerText = data.reply;
+        speakText(data.reply); // Speak after user click
+    })
+    .catch(err => {
+        document.getElementById("reply").innerText = "❌ Error communicating with server.";
+        console.error(err);
+    });
+}
+</script>
+
+</body>
+</html>

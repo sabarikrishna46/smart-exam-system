@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hall Tickets - Multiple Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .results-header {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .results-header h1 {
+            margin: 0;
+            color: #003366;
+        }
+
+        .results-count {
+            color: #666;
+            margin-top: 10px;
+        }
+
+        .hall-tickets {
+            display: grid;
+            gap: 20px;
+        }
+
+        .ticket-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            page-break-inside: avoid;
+        }
+
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #003366;
+        }
+
+        .ticket-header h3 {
+            margin: 0;
+            color: #003366;
+        }
+
+        .print-btn {
+            padding: 8px 16px;
+            background-color: #003366;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .print-btn:hover {
+            background-color: #0059b3;
+        }
+
+        .student-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .student-info p {
+            margin: 5px 0;
+        }
+
+        .exam-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+
+        .exam-table th, .exam-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .exam-table th {
+            background-color: #003366;
+            color: white;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background-color: #003366;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0059b3;
+        }
+
+        .btn-secondary {
+            background-color: #666;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #333;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .results-header, .action-buttons, .print-btn {
+                display: none;
+            }
+            .ticket-card {
+                page-break-after: always;
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="results-header">
+            <h1>Hall Tickets - Search Results</h1>
+            <div class="results-count">
+                Found {{ results|length }} hall ticket(s)
+            </div>
+        </div>
+
+        <div class="hall-tickets">
+            {% for result in results %}
+            <div class="ticket-card">
+                <div class="ticket-header">
+                    <div>
+                        <h3>{{ result.student.name }}</h3>
+                        <p style="margin: 5px 0; color: #666;">Registration: {{ result.student.roll_no }}</p>
+                    </div>
+                    <button class="print-btn" onclick="window.print()">Print</button>
+                </div>
+
+                <div class="student-info">
+                    <p><strong>Email:</strong> {{ result.student.email }}</p>
+                    <p><strong>Department:</strong> {{ result.student.department }}</p>
+                    <p><strong>Semester:</strong> {{ result.student.semester }}</p>
+                    <p><strong>Roll No:</strong> {{ result.student.roll_no }}</p>
+                </div>
+
+                <table class="exam-table">
+                    <tr>
+                        <th>Exam Code</th>
+                        <th>Exam Name</th>
+                        <th>Date</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                    </tr>
+                    {% for exam in result.exams %}
+                    <tr>
+                        <td>{{ exam.exam_code }}</td>
+                        <td>{{ exam.subject }}</td>
+                        <td>{{ exam.exam_date }}</td>
+                        <td>{{ exam.start_time }}</td>
+                        <td>{{ exam.end_time }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+
+                <div class="action-buttons">
+                    <a href="/get_hall_ticket" class="btn btn-secondary">Back to Search</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

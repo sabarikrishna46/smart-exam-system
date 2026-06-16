@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Download Hall Ticket</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f6f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .card {
+      background: white;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card h2 {
+      margin-bottom: 30px;
+      color: #003366;
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .search-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 25px;
+      border-bottom: 2px solid #e0e0e0;
+    }
+
+    .tab-btn {
+      padding: 10px 20px;
+      border: none;
+      background: none;
+      color: #666;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s ease;
+    }
+
+    .tab-btn.active {
+      color: #003366;
+      border-bottom-color: #003366;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .form-group label {
+      display: block;
+      color: #003366;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    input[type="email"], input[type="text"], select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: border-color 0.3s ease;
+      box-sizing: border-box;
+    }
+
+    input[type="email"]:focus, input[type="text"]:focus, select:focus {
+      outline: none;
+      border-color: #003366;
+      box-shadow: 0 0 5px rgba(0, 51, 102, 0.3);
+    }
+
+    .search-method {
+      display: none;
+    }
+
+    .search-method.active {
+      display: block;
+    }
+
+    button {
+      width: 100%;
+      background-color: #003366;
+      color: white;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #0059b3;
+      transform: translateY(-2px);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .footer-note {
+      margin-top: 20px;
+      font-size: 13px;
+      color: #888;
+      line-height: 1.5;
+    }
+
+    .multi-select {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background: #f9f9f9;
+      min-height: 45px;
+    }
+
+    .multi-select label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin: 0;
+      font-weight: normal;
+    }
+
+    .multi-select input[type="checkbox"] {
+      width: auto;
+      padding: 0;
+      border: none;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h2>Download Your Hall Ticket</h2>
+  
+  <div class="search-tabs">
+    <button type="button" class="tab-btn active" onclick="switchTab('method1')">By Email & Semester</button>
+    <button type="button" class="tab-btn" onclick="switchTab('method2')">By Roll No & Semester</button>
+  </div>
+
+  <!-- Search Method 1: Email & Semester -->
+  <form method="POST" action="/get_hall_ticket" class="search-method active" id="method1">
+    <div class="form-group">
+      <label for="email1">Email:</label>
+      <input type="email" id="email1" name="email" required>
+    </div>
+    <div class="form-group">
+      <label for="semester1">Semester:</label>
+      <input type="text" id="semester1" name="semester" required placeholder="e.g., 1, 2, 3">
+    </div>
+    <button type="submit">Get Hall Ticket</button>
+  </form>
+
+  <!-- Search Method 2: Roll No -->
+  <form method="POST" action="/get_hall_ticket" class="search-method" id="method2">
+    <div class="form-group">
+      <label for="rollno">Registration No:</label>
+      <input type="text" id="rollno" name="roll_no" required placeholder="e.g., 0123128012">
+    </div>
+    <div class="form-group">
+      <label for="semester2">Semester:</label>
+      <input type="text" id="semester2" name="semester" required placeholder="e.g., 1, 2, 3">
+    </div>
+    <button type="submit">Get Hall Ticket</button>
+  </form>
+
+  <div class="footer-note">
+    Enter your email and semester number or registration number and semester to download your hall ticket.
+  </div>
+</div>
+
+<script>
+function switchTab(methodId) {
+  // Hide all search methods
+  document.querySelectorAll('.search-method').forEach(el => {
+    el.classList.remove('active');
+  });
+  
+  // Deactivate all tab buttons
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  
+  // Show selected method
+  document.getElementById(methodId).classList.add('active');
+  
+  // Activate corresponding tab button
+  event.target.classList.add('active');
+}
+</script>
+
+</body>
+</html>

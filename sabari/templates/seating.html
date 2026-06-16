@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Exam Seating Arrangement</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* ===== PREMIUM HAMBURGER BUTTON ===== */
+        .hamburger {
+            display: flex !important;
+            flex-direction: column;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #5b7b9e, #7cb9e8);
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            gap: 6px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+            transition: all 0.35s ease;
+            margin-right: 10px;
+        }
+
+        .hamburger:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 18px rgba(124, 185, 232, 0.8);
+        }
+
+        .hamburger span {
+            width: 100%;
+            height: 4px;
+            background: #ffffff;
+            border-radius: 5px;
+            transition: all 0.45s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: translateY(10px) rotate(45deg);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+            transform: scale(0);
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: translateY(-10px) rotate(-45deg);
+        }
+
+        .hamburger:active {
+            transform: scale(0.95);
+        }
+
+        /* Top Navigation Bar */
+        .top-navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(51, 65, 85, 0.92);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+            padding: 0.8rem 1rem;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: white !important;
+            font-size: 1.2rem;
+            margin: 0;
+        }
+
+        /* Off-canvas menu styling */
+        .offcanvas-menu {
+            position: fixed;
+            right: -300px;
+            top: 60px;
+            width: 300px;
+            height: calc(100vh - 60px);
+            background: white;
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+            z-index: 999;
+            overflow-y: auto;
+            padding: 20px 0;
+            transition: right 0.45s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        .offcanvas-menu.active {
+            right: 0;
+        }
+
+        .offcanvas-menu .navbar-nav {
+            flex-direction: column;
+        }
+
+        .offcanvas-menu .nav-item {
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .offcanvas-menu .nav-link {
+            padding: 12px 20px;
+            display: block;
+            color: #34495e !important;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .offcanvas-menu .nav-link:hover {
+            color: #5b7b9e !important;
+            background-color: rgba(91, 123, 158, 0.08);
+        }
+
+        /* Overlay for menu */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 998;
+            display: none;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background: linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1));
+            background-color: #f5f7fa;
+            padding: 20px;
+            padding-top: 80px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: auto;
+        }
+
+        .header {
+            background: #34495e;
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(52, 73, 94, 0.2);
+        }
+
+        .header h1 {
+            font-size: 32px;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .date-header {
+            background: #5b7b9e;
+            color: #fff;
+            padding: 14px 20px;
+            margin: 35px 0 15px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(91, 123, 158, 0.2);
+        }
+
+        .seating-section {
+            background: rgba(255, 255, 255, 0.92);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-left: 4px solid #5b7b9e;
+        }
+
+        .seating-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #5b7b9e;
+            padding-bottom: 12px;
+            margin-bottom: 18px;
+        }
+
+        .hall-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1a1a2e;
+        }
+
+        .department-name {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .exam-session {
+            background: #d4a574;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: inline-block;
+            color: white;
+            box-shadow: 0 2px 8px rgba(212, 165, 116, 0.2);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: white;
+        }
+
+        th, td {
+            border: 1px solid #e0e0e0;
+            padding: 10px 6px;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        thead {
+            background: #34495e;
+            color: white;
+            font-weight: 600;
+        }
+
+        tbody tr:nth-child(odd) {
+            background: #f9f9f9;
+        }
+
+        tbody tr:hover {
+            background: rgba(91, 123, 158, 0.06);
+        }
+
+        .seat-num {
+            background: #5b7b9e;
+            padding: 6px 8px;
+            font-weight: bold;
+            color: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 6px rgba(91, 123, 158, 0.15);
+        }
+
+        .reg-allocated {
+            background: #5da28d;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            box-shadow: 0 2px 6px rgba(93, 162, 141, 0.15);
+        }
+
+        .reg-absent {
+            background: #c0644f;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            text-decoration: line-through;
+            box-shadow: 0 2px 6px rgba(192, 100, 79, 0.15);
+        }
+
+        .reg-empty {
+            color: #999;
+        }
+
+        .absent-btn {
+            background: #c0644f;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(192, 100, 79, 0.2);
+        }
+
+        .absent-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(192, 100, 79, 0.3);
+        }
+
+.back-btn {
+    position: absolute;
+    left: 25px;
+    top: 25px;
+    background: #34495e;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(52, 73, 94, 0.2);
+}
+
+.back-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(52, 73, 94, 0.3);
+    color: white;
+}
+
+.print-btn {
+    background: #5da28d;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(93, 162, 141, 0.2);
+}
+
+.print-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(93, 162, 141, 0.3);
+}
+
+        .no-data {
+            text-align: center;
+            color: red;
+            font-size: 18px;
+            margin-top: 40px;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .container {
+                max-width: 100%;
+                box-shadow: none;
+                padding: 0;
+            }
+            .back-btn, .print-btn, .filter-section {
+                display: none;
+            }
+            .header {
+                margin-bottom: 15px;
+            }
+            .seating-section {
+                page-break-inside: avoid;
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Overlay for mobile menu -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Top Navigation Bar -->
+    <div class="top-navbar">
+        <h1 class="navbar-brand">📜 Exam Schedule</h1>
+        <button class="hamburger" id="hamburgerBtn" aria-label="Toggle menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </div>
+
+    <!-- Off-canvas Mobile Menu -->
+    <div class="offcanvas-menu" id="mobileMenu">
+        <ul class="navbar-nav">
+            <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">📊 Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('seating') }}">Seating Plan</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('seating_details') }}">Seating Details</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('get_hall_ticket') }}">Hall Ticket</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='add_exam') }}">Add Exam</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='manage') }}">Manage Exam</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='add_student') }}">Add Student</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='add_staff') }}">Add Staff</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('staff_view') }}">Staff View</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='add_department') }}">Add Bench Info</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('login', next='mark_absent_new') }}">Mark Absent</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('absentees_statement') }}">Absentees Statement</a></li>
+        </ul>
+    </div>
+
+<div class="container">
+
+   <div class="header" style="position: relative;">
+    <a href="{{ url_for('index') }}" class="back-btn">⬅ Back to Dashboard</a>
+    <button class="print-btn" onclick="window.print()" style="position: absolute; right: 20px; top: 20px;">🖨️ Print</button>
+    <h1>📋 Exam Seating Arrangement</h1>
+    <p>Date Wise • Hall Wise • Bench Wise</p>
+</div>
+
+    <!-- Filter Section -->
+     {% if seating %}
+     <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.15);">
+        <h3 style="margin-bottom: 15px; color: #003366;">🔍 Filter by Exam Code or Hall</h3>
+        <form method="GET" style="display: flex; gap: 10px;">
+            <div>
+                <label for="filter_exam" style="display: block; font-weight: bold; margin-bottom: 5px;">Exam Code:</label>
+                <select id="filter_exam" name="exam_code" onchange="this.form.submit()" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <option value="">-- All Exams --</option>
+                    {% set exam_codes = [] %}
+                    {% for seat in seating %}
+                        {% if seat.exam_code not in exam_codes %}
+                            {% set _ = exam_codes.append(seat.exam_code) %}
+                            <option value="{{ seat.exam_code }}" {% if request.args.get('exam_code') == seat.exam_code %}selected{% endif %}>{{ seat.exam_code }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label for="filter_hall" style="display: block; font-weight: bold; margin-bottom: 5px;">Hall No:</label>
+                <select id="filter_hall" name="hall_no" onchange="this.form.submit()" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <option value="">-- All Halls --</option>
+                    {% set hall_nos = [] %}
+                    {% for seat in seating %}
+                        {% if seat.hall_no not in hall_nos %}
+                            {% set _ = hall_nos.append(seat.hall_no) %}
+                            <option value="{{ seat.hall_no }}" {% if request.args.get('hall_no') == seat.hall_no %}selected{% endif %}>{{ seat.hall_no }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+        </form>
+     </div>
+     {% endif %}
+
+       {# ================= DATE WISE GROUPING ================= #}
+     {% set dates = {} %}
+     {% for seat in seating %}
+        {% set d = seat.exam_date_formatted %}
+        {% if d not in dates %}
+            {% set _ = dates.update({d: {}}) %}
+        {% endif %}
+
+        {% if seat.hall_no not in dates[d] %}
+            {% set _ = dates[d].update({seat.hall_no: {'seats': [], 'info': seat}}) %}
+        {% endif %}
+
+        {% set _ = dates[d][seat.hall_no]['seats'].append(seat) %}
+     {% endfor %}
+
+     {# ================= DISPLAY ================= #}
+     {% if dates %}
+     {% for exam_date, halls in dates.items() %}
+
+        <div class="date-header">📅 Exam Date : {{ exam_date }}</div>
+
+        {% for hall_no, hall_data in halls | sort_halls %}
+        <div class="seating-section">
+
+            <div class="seating-header">
+                <div>
+                    
+                    <div class="hall-number">HALL NO : {{ hall_no }}</div>
+                </div>
+                <div>
+                    <div class="exam-session">{{ hall_data.info.exam_session }}</div><br><br>
+                    <a href="{{ url_for('absent_details', hall_no=hall_no) }}" class="absent-btn">
+                        📋 ABSENT
+                    </a>
+                    
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                <tr>
+                    <th>S.No</th>
+                    {% for i in range(9) %}
+                        <th>Seat</th><th>Reg No</th>
+                    {% endfor %}
+                </tr>
+                </thead>
+
+                <tbody>
+                {% set max_bench = hall_data.info.get('max_benches', 5) if hall_data.info.get('max_benches') is defined else 5 %}
+
+
+                {% for bench in range(1, max_bench + 1) %}
+                <tr>
+                    <td><b>{{ bench }}</b></td>
+                    {% for col in [1,2,3] %}
+                        {% for pos_idx, pos in [(0, 'LEFT'), (1, 'CENTER'), (2, 'RIGHT')] %}
+                            {% set sd = hall_data.seats
+                                | selectattr('col','equalto',col)
+                                | selectattr('position','equalto',pos)
+                                | selectattr('bench_no','equalto',bench)
+                                | list %}
+                            {% set seat_index = (col-1)*3*max_bench + pos_idx*max_bench + bench %}
+                            {% if sd %}
+                                {% set s = sd[0] %}
+                                <td><span class="seat-num">{{ seat_index }}</span></td>
+                                <td>
+                                    {% if s.roll_no %}
+                                        {% if s.is_absent == 1 %}
+                                            <span class="reg-absent">{{ s.roll_no }}</span>
+                                        {% else %}
+                                            <span class="reg-allocated">{{ s.roll_no }}</span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="reg-empty">-</span>
+                                    {% endif %}
+                                </td>
+                            {% else %}
+                                <td><span class="seat-num">{{ seat_index }}</span></td><td>-</td>
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            {# ===== HALL ALLOCATION SUMMARY TABLE ===== #}
+            {% if hall_allocation_summary and hall_no in hall_allocation_summary %}
+            <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #003366;">
+                <h4 style="margin-bottom: 15px; color: #003366; font-size: 14px; font-weight: bold;">📊 DEPARTMENT ALLOCATION FOR {{ hall_no }}</h4>
+                <table style="width: 100%; border-collapse: collapse; background: white;">
+                    <thead>
+                        <tr style="background: #003366; color: white;">
+                            <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Hall</th>
+                            <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Major</th>
+                            <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Exam Code</th>
+                            <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Reg No</th>
+                            <th style="padding: 10px; text-align: center; border: 1px solid #ddd;">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for alloc in hall_allocation_summary[hall_no] %}
+                        <tr style="border-bottom: 1px solid #ddd;">
+                            <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; color: #003366;">{{ hall_no }}</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">{{ alloc.department }}</td>
+                            <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; color: #003366;">{{ alloc.exam_code }}</td>
+                            <td style="padding: 10px; border: 1px solid #ddd; font-family: monospace;">{{ alloc.start_reg }} - {{ alloc.end_reg }}</td>
+                            <td style="padding: 10px; border: 1px solid #ddd; text-align: center; background: #e8f4f8; font-weight: bold;">{{ alloc.total_students }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+
+     {% endfor %}
+     {% else %}
+        <p class="no-data">❌ No seating data found</p>
+     {% endif %}
+</div>
+
+<script>
+    // Hamburger Menu Toggle
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const overlay = document.getElementById('overlay');
+
+    if (hamburgerBtn && mobileMenu && overlay) {
+        hamburgerBtn.addEventListener('click', () => {
+            hamburgerBtn.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            overlay.classList.toggle('active');
+        });
+
+        overlay.addEventListener('click', () => {
+            hamburgerBtn.classList.remove('active');
+            mobileMenu.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+
+        const navLinks = mobileMenu.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                hamburgerBtn.classList.remove('active');
+                mobileMenu.classList.remove('active');
+                overlay.classList.remove('active');
+            });
+        });
+    }
+</script>
+</body>
+</html>

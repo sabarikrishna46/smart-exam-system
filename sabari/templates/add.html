@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Exam</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('https://www.alagappauniversity.ac.in/img/core-img/alu-slide1.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .form-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .form-label {
+            color: rgb(0, 6, 12);
+            font-weight: bold;
+        }
+        .btn-back {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <center><img src="https://da.alagappauniversity.ac.in/Assets/img/logo/home_logo.png" height="200" width="600" alt="Alagappa University Logo"></center>
+    <div class="container form-container">
+        <h1 class="my-4 text-center" style="color: rgb(0, 6, 12); font-family: fantasy;">📜 Add New Exam</h1>
+
+<!-- Flash Message Block -->
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+      {% for message in messages %}
+        {{ message }}
+      {% endfor %}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  {% endif %}
+{% endwith %}
+
+        <!-- Add Exam Form -->
+        <form method="POST" action="/add">
+            <div class="mb-3">
+                <label for="exam_code" class="form-label">Exam Code:</label>
+                <input type="text" name="exam_code" id="exam_code" class="form-control" placeholder="e.g., TAM501" required>
+            </div>
+            <div class="mb-3">
+                <label for="subject" class="form-label">Subject:</label>
+                <input type="text" name="subject" id="subject" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="semester" class="form-label">Semester:</label>
+                <select name="semester" id="semester" class="form-select" required>
+                    <option value="" disabled selected>Select Semester</option>
+                    <option value="1">Sem 1</option>
+                    <option value="2">Sem 2</option>
+                    <option value="3">Sem 3</option>
+                    <option value="4">Sem 4</option>
+                    <option value="5">Sem 5</option>
+                    <option value="6">Sem 6</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="department" class="form-label">Department:</label>
+                <select name="department" id="department" class="form-select" required>
+                    <option value="" disabled selected>Select Department</option>
+                    <option value="ALL">ALL DEPARTMENTS</option>
+                    
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="college_code" class="form-label">College Code (Auto-filled):</label>
+                <input type="text" name="college_code" id="college_code" class="form-control" value="AU01" readonly>
+            </div>
+            <div class="mb-3">
+                <label for="exam_date" class="form-label">Exam Date (DD.MM.YYYY):</label>
+                <input type="text" name="exam_date" id="exam_date" class="form-control" placeholder="e.g., 17.04.2025" required pattern="\d{2}\.\d{2}\.\d{4}">
+            </div>
+            <div class="mb-3">
+                <label for="start_time" class="form-label">Start Time (HH.MM AM/PM):</label>
+                <input type="text" name="start_time" id="start_time" class="form-control" placeholder="e.g., 10.00 AM" required pattern="\d{2}\.\d{2}\s(AM|PM)">
+            </div>
+            <div class="mb-3">
+                <label for="end_time" class="form-label">End Time (HH.MM AM/PM):</label>
+                <input type="text" name="end_time" id="end_time" class="form-control" placeholder="e.g., 01.00 PM" required pattern="\d{2}\.\d{2}\s(AM|PM)">
+            </div>
+            <div class="mb-3">
+                <label for="total_students" class="form-label">Total Students:</label>
+                <input type="number" name="total_students" id="total_students" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="is_arrear" class="form-label">Exam Type:</label>
+                <select name="is_arrear" id="is_arrear" class="form-select" required>
+                    <option value="0" selected>Regular Exam</option>
+                    <option value="1">Arrear Exam</option>
+                </select>
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-success">Add Exam</button>
+                <a href="{{url_for('index')}}" class="btn btn-secondary btn-back">Back to Schedule</a>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Load departments on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            loadDepartmentsForAddExam();
+        });
+
+        function loadDepartmentsForAddExam() {
+            fetch('/api/departments')
+                .then(response => response.json())
+                .then(data => {
+                    const departmentSelect = document.getElementById('department');
+                    const allOption = departmentSelect.querySelector('option[value="ALL"]');
+                    
+                    // Add each department from database
+                    data.departments.forEach(dept => {
+                        if (dept !== 'ALL') {  // Avoid duplicates
+                            const option = document.createElement('option');
+                            option.value = dept;
+                            option.textContent = dept;
+                            departmentSelect.insertBefore(option, allOption);
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading departments:', error);
+                });
+        }
+    </script>
