@@ -23,18 +23,6 @@ A full-stack web application designed to simplify and automate the examination p
 - **Database:** MySQL
 - **Version Control:** Git & GitHub
 
-## 📸 Screenshots
-
-> Add your project screenshots here.
-
-- Login Page
-- Dashboard
-- Student Management
-- Faculty Management
-- Seating Arrangement
-- Hall Ticket Generation
-- Notifications
-
 ## 🚀 Installation
 
 ```bash
